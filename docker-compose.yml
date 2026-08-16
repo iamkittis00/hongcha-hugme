@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hongcha-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hongcha
+      POSTGRES_USER: hongcha
+      POSTGRES_PASSWORD: REMOVED-DB-PASSWORD
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hongcha"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: hongcha-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://hongcha:REMOVED-DB-PASSWORD@postgres:5432/hongcha
+      JWT_SECRET: REMOVED-JWT-SECRET
+      PORT: 4000
+      CORS_ORIGIN: http://localhost:8090
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+    container_name: hongcha-frontend
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
