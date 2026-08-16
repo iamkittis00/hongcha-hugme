@@ -1,0 +1,153 @@
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { BiLeaf, BiSearch, BiShoppingBag, BiX } from "react-icons/bi";
+import { FiUser } from "react-icons/fi";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import { useLanguage } from "../context/LanguageContext";
+import AccountDropdown from "./AccountDropdown";
+
+const translations = {
+  th: {
+    tagline: "PREMIUM THAI TEA",
+    navLinks: [
+      { path: "/", thai: "หน้าแรก", eng: "Home" },
+      { path: "/products", thai: "สินค้า", eng: "Products" },
+      { path: "/reviews", thai: "รีวิว", eng: "Reviews" },
+      { path: "/about", thai: "เกี่ยวกับเรา", eng: "About Us" },
+    ],
+    searchPlaceholder: "ค้นหาชา...",
+    account: "บัญชีของฉัน",
+  },
+  en: {
+    tagline: "PREMIUM THAI TEA",
+    navLinks: [
+      { path: "/", thai: "Home", eng: "" },
+      { path: "/products", thai: "Products", eng: "" },
+      { path: "/reviews", thai: "Reviews", eng: "" },
+      { path: "/about", thai: "About Us", eng: "" },
+    ],
+    searchPlaceholder: "Search tea...",
+    account: "My Account",
+  },
+};
+
+export default function Navbar() {
+  const { isAuthenticated, openAuthModal } = useAuth();
+  const { count: cartCount } = useCart();
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    navigate(q ? `/products?search=${encodeURIComponent(q)}` : "/products");
+    setSearchOpen(false);
+    setSearchQuery("");
+  };
+
+  return (
+    <header className="w-full bg-white border-b border-hugme-border sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="w-10 h-10 rounded-full bg-matcha-soft flex justify-center items-center">
+            <BiLeaf className="text-matcha text-xl" />
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="text-content-primary text-lg font-bold leading-tight">โฮงชาฮักมี</span>
+            <span className="text-content-muted text-[9px] tracking-widest font-semibold uppercase">{t.tagline}</span>
+          </div>
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+          {t.navLinks.map((link) => {
+            const isActive =
+              link.path === "/"
+                ? location.pathname === "/"
+                : location.pathname.startsWith(link.path);
+
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex flex-col items-center transition-colors ${
+                  isActive
+                    ? "text-matcha font-bold"
+                    : "text-content-primary hover:text-matcha font-normal"
+                }`}
+              >
+                <span>{link.thai}</span>
+                {link.eng && (
+                  <span className={`text-[10px] ${isActive ? "text-matcha/80" : "text-content-muted"}`}>
+                    {link.eng}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="flex items-center gap-3 sm:gap-4">
+          {searchOpen ? (
+            <form onSubmit={handleSearchSubmit} className="flex items-center gap-1">
+              <input
+                autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onBlur={() => !searchQuery && setSearchOpen(false)}
+                placeholder={t.searchPlaceholder}
+                className="w-28 sm:w-48 px-3 py-1.5 rounded-full border border-hugme-border text-xs sm:text-sm focus:outline-none focus:border-matcha"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchOpen(false);
+                  setSearchQuery("");
+                }}
+                className="p-2 rounded-full hover:bg-gray-100 text-content-muted transition-colors cursor-pointer"
+              >
+                <BiX size={18} />
+              </button>
+            </form>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="p-2 rounded-full hover:bg-gray-100 text-content-primary transition-colors cursor-pointer"
+            >
+              <BiSearch size={20} />
+            </button>
+          )}
+
+          <Link to="/cart" className="relative p-2 rounded-full hover:bg-gray-100 text-content-primary transition-colors">
+            <BiShoppingBag size={20} />
+            {cartCount > 0 && (
+              <span className="absolute top-0 right-0 bg-earth-brown text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
+          {isAuthenticated ? (
+            <AccountDropdown />
+          ) : (
+            <button
+              type="button"
+              onClick={() => openAuthModal("login")}
+              className="flex items-center gap-2 bg-matcha hover:bg-matcha-hover text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer"
+            >
+              <FiUser size={16} />
+              <span>{t.account}</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}

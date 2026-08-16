@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  password  String
+  provider  String?
+  createdAt DateTime @default(now())
+
+  orders         Order[]
+  reviews        Review[]
+  addresses      Address[]
+  paymentMethods PaymentMethod[]
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  label      String
+  fullName   String
+  phone      String
+  address    String
+  province   String
+  postalCode String
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PaymentMethod {
+  id        String   @id @default(uuid())
+  type      String // "card" | "promptpay" | "bank"
+  label     String
+  last4     String?
+  expiry    String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id               Int     @id @default(autoincrement())
+  title            String
+  subtitle         String
+  description      String
+  price            Int
+  category         String
+  caffeine         String?
+  imagePlaceholder String
+
+  orderItems OrderItem[]
+  reviews    Review[]
+}
+
+model Order {
+  id             String   @id @default(uuid())
+  orderNumber    String   @unique
+  status         String   @default("paid")
+  shippingMethod String
+  paymentMethod  String
+  fullName       String
+  address        String
+  province       String
+  postalCode     String
+  phone          String
+  email          String
+  subtotal       Int
+  discount       Int
+  shippingCost   Int
+  total          Int
+  createdAt      DateTime @default(now())
+
+  userId String
+  user   User        @relation(fields: [userId], references: [id])
+  items  OrderItem[]
+}
+
+model OrderItem {
+  id    Int    @id @default(autoincrement())
+  name  String
+  price Int
+  qty   Int
+  size  String?
+
+  orderId String
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+}
