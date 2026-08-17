@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
+import CustomSelect from "../components/CustomSelect";
 
 const PAGE_SIZE = 6;
 
@@ -77,10 +78,15 @@ export default function Products() {
   const [addedId, setAddedId] = useState(null);
   const [searchInput, setSearchInput] = useState(searchQuery);
 
+  const categoryQuery = searchParams.get("category") || "";
+
   useEffect(() => {
     setSearchInput(searchQuery);
+    if (categoryQuery) {
+      setSelectedCategories([categoryQuery]);
+    }
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, categoryQuery]);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -216,14 +222,14 @@ export default function Products() {
         )}
         <div className="flex items-center gap-2 text-xs sm:text-sm ml-auto">
           <label className="text-content-muted whitespace-nowrap">{t.sortLabel}</label>
-          <select
+          <CustomSelect
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-1.5 rounded-lg border border-hugme-border bg-white text-content-primary text-xs sm:text-sm focus:outline-none focus:border-matcha cursor-pointer"
-          >
-            <option value="low-high">{t.sortLowHigh}</option>
-            <option value="high-low">{t.sortHighLow}</option>
-          </select>
+            onChange={(val) => setSortBy(val)}
+            options={[
+              { value: "low-high", label: t.sortLowHigh },
+              { value: "high-low", label: t.sortHighLow },
+            ]}
+          />
         </div>
       </div>
 
