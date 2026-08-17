@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BiLeaf, BiSearch, BiShoppingBag, BiX } from "react-icons/bi";
+import { BiLeaf, BiSearch, BiShoppingBag, BiX, BiMenu } from "react-icons/bi";
 import { FiUser } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
@@ -42,6 +42,7 @@ export default function Navbar() {
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -54,15 +55,25 @@ export default function Navbar() {
   return (
     <header className="w-full bg-white border-b border-hugme-border sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-full bg-matcha-soft flex justify-center items-center">
-            <BiLeaf className="text-matcha text-xl" />
-          </div>
-          <div className="flex flex-col text-left">
-            <span className="text-content-primary text-lg font-bold leading-tight">โฮงชาฮักมี</span>
-            <span className="text-content-muted text-[9px] tracking-widest font-semibold uppercase">{t.tagline}</span>
-          </div>
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden p-2 rounded-lg text-content-primary hover:bg-gray-100 transition-colors cursor-pointer"
+          >
+            <BiMenu size={24} />
+          </button>
+
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-10 h-10 rounded-full bg-matcha-soft flex justify-center items-center">
+              <BiLeaf className="text-matcha text-xl" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-content-primary text-lg font-bold leading-tight">โฮงชาฮักมี</span>
+              <span className="text-content-muted text-[9px] tracking-widest font-semibold uppercase">{t.tagline}</span>
+            </div>
+          </Link>
+        </div>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
           {t.navLinks.map((link) => {
@@ -92,7 +103,7 @@ export default function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-4">
           {searchOpen ? (
             <form onSubmit={handleSearchSubmit} className="flex items-center gap-1">
               <input
@@ -146,6 +157,72 @@ export default function Navbar() {
               <span>{t.account}</span>
             </button>
           )}
+        </div>
+      </div>
+
+      <div
+        className={`md:hidden fixed inset-0 z-50 transition-all duration-300 ${
+          mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+      >
+        <div
+          className={`fixed inset-0 bg-black/40 transition-opacity duration-300 ease-in-out ${
+            mobileMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setMobileMenuOpen(false)}
+        ></div>
+
+        <div
+          className={`relative w-[280px] bg-white h-full shadow-2xl p-5 flex flex-col justify-between z-50 text-left transition-transform duration-300 ease-in-out transform ${
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div>
+            <div className="flex items-center justify-between pb-4 border-b border-hugme-border mb-5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-matcha-soft flex justify-center items-center">
+                  <BiLeaf className="text-matcha text-lg" />
+                </div>
+                <span className="font-bold text-base text-content-primary">โฮงชาฮักมี</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-1.5 rounded-full hover:bg-gray-100 text-content-muted transition-colors cursor-pointer"
+              >
+                <BiX size={22} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              {t.navLinks.map((link) => {
+                const isActive =
+                  link.path === "/"
+                    ? location.pathname === "/"
+                    : location.pathname.startsWith(link.path);
+
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-between ${
+                      isActive
+                        ? "bg-matcha text-white"
+                        : "text-content-primary hover:bg-gray-100"
+                    }`}
+                  >
+                    <span>{link.thai}</span>
+                    {link.eng && (
+                      <span className={`text-xs ${isActive ? "text-white/80" : "text-content-muted"}`}>
+                        {link.eng}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </header>

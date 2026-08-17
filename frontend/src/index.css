@@ -2,31 +2,21 @@
 @import "tailwindcss";
 
 @theme {
-  /* Default Font Family for Tailwind */
   --font-sans: 'Sarabun', 'TH Sarabun New', 'TH SarabunPSK', sans-serif;
-
-  /* Brand Matcha Colors */
   --color-matcha: #486851;
   --color-matcha-hover: #38523F;
   --color-matcha-soft: #E2E9DC;
-
-  /* Earth Accent Colors */
   --color-earth-brown: #7A543E;
   --color-earth-terracotta: #C04A26;
   --color-earth-gold: #E6A740;
-
-  /* Hugme Layout Backgrounds & Borders */
   --color-hugme-bg: #F6F4EF;
   --color-hugme-section: #EFE9DF;
   --color-hugme-image: #E5DFD3;
   --color-hugme-border: #E2DBD0;
-
-  /* Typography Colors */
   --color-content-primary: #2A2826;
   --color-content-muted: #767069;
 }
 
-/* Global Font Apply to All Elements */
 html, body, *, button, input, select, textarea {
   font-family: 'Sarabun', 'TH Sarabun New', 'TH SarabunPSK', sans-serif !important;
 }
@@ -34,4 +24,34 @@ html, body, *, button, input, select, textarea {
 body {
   background-color: var(--color-hugme-bg);
   color: var(--color-content-primary);
+}
+
+@keyframes dropdownPop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes submenuSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-dropdown-pop {
+  animation: dropdownPop 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-submenu-slide {
+  animation: submenuSlide 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

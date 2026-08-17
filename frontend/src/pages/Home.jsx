@@ -127,13 +127,17 @@ export default function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((cat, idx) => (
-            <div key={idx} className="bg-white rounded-xl border border-hugme-border p-4 flex flex-col items-center shadow-xs hover:shadow-md transition-shadow cursor-pointer">
+            <Link
+              key={idx}
+              to={`/products?category=${encodeURIComponent(cat.title)}`}
+              className="bg-white rounded-xl border border-hugme-border p-4 flex flex-col items-center shadow-xs hover:shadow-md transition-shadow cursor-pointer group"
+            >
               <div className="w-full h-36 bg-hugme-image rounded-lg flex items-center justify-center text-content-muted text-xs font-medium mb-3">
                 {cat.placeholder}
               </div>
-              <h3 className="font-bold text-base text-content-primary">{cat.title}</h3>
+              <h3 className="font-bold text-base text-content-primary group-hover:text-matcha transition-colors">{cat.title}</h3>
               <span className="text-content-muted text-xs">{cat.subtitle}</span>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
