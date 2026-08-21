@@ -8,13 +8,16 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  phone     String?
-  password  String
-  provider  String?
-  createdAt DateTime @default(now())
+  id               String    @id @default(uuid())
+  name             String
+  email            String    @unique
+  phone            String?
+  password         String
+  provider         String?
+  role             String    @default("user")
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
 
   orders         Order[]
   reviews        Review[]
@@ -59,6 +62,7 @@ model Product {
   category         String
   caffeine         String?
   imagePlaceholder String
+  imageUrl         String?
 
   orderItems OrderItem[]
   reviews    Review[]

@@ -41,6 +41,7 @@ export function CartProvider({ children }) {
           size,
           qty,
           imagePlaceholder: product.imagePlaceholder,
+          imageUrl: product.imageUrl,
         },
       ];
     });

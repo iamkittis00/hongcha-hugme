@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { BiPlus, BiMinus, BiTrash } from "react-icons/bi";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
+import ProductImage from "../components/ProductImage";
 
 const translations = {
   th: {
@@ -126,9 +127,12 @@ export default function Cart() {
                   className="p-4 sm:px-6 sm:py-5 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center text-left"
                 >
                   <div className="sm:col-span-5 flex items-center gap-3">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-hugme-image border border-hugme-border rounded-lg flex items-center justify-center text-[10px] text-content-muted shrink-0">
-                      {item.imagePlaceholder}
-                    </div>
+                    <ProductImage
+                      src={item.imageUrl}
+                      alt={item.name}
+                      placeholder={item.imagePlaceholder}
+                      className="w-16 h-16 sm:w-20 sm:h-20 border border-hugme-border rounded-lg text-[10px] shrink-0"
+                    />
                     <div className="flex flex-col">
                       <h3 className="font-bold text-sm sm:text-base text-content-primary">{item.name}</h3>
                       {item.size && <span className="text-content-muted text-xs">{t.sizeLabel} {item.size}</span>}

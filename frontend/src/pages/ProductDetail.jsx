@@ -7,6 +7,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
+import ProductImage from "../components/ProductImage";
 
 const packageSizes = ["50g", "100g", "200g"];
 
@@ -182,9 +183,13 @@ export default function ProductDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-12">
         <div className="flex flex-col gap-4">
-          <div className="w-full h-80 sm:h-96 bg-hugme-image rounded-xl border border-hugme-border flex items-center justify-center text-content-muted text-xs sm:text-sm font-medium p-4 relative overflow-hidden">
-            <div className="absolute inset-0 border border-content-muted/20 rotate-45 transform scale-150 pointer-events-none"></div>
-            <span>{product.imagePlaceholder}</span>
+          <div className="w-full h-80 sm:h-96 rounded-xl border border-hugme-border relative overflow-hidden">
+            <ProductImage
+              src={product.imageUrl}
+              alt={product.title}
+              placeholder={product.imagePlaceholder}
+              className="w-full h-full text-sm"
+            />
           </div>
         </div>
 

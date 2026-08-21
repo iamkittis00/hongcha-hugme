@@ -1,4 +1,5 @@
 import { Router } from "express";
+import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.js";
@@ -6,12 +7,21 @@ import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
+const RESET_TOKEN_TTL_MS = 15 * 60 * 1000;
+
 function issueToken(user) {
   return jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 }
 
 function toPublicUser(user) {
-  return { id: user.id, name: user.name, email: user.email, phone: user.phone, provider: user.provider };
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    provider: user.provider,
+    role: user.role,
+  };
 }
 
 const SOCIAL_PROVIDERS = {
@@ -131,6 +141,55 @@ router.post("/change-password", requireAuth, async (req, res) => {
 
   const hashed = await bcrypt.hash(newPassword, 10);
   await prisma.user.update({ where: { id: req.userId }, data: { password: hashed } });
+
+  res.json({ success: true });
+});
+
+// โหมดจำลอง (demo): ไม่ได้ส่งอีเมลจริง — คืน token/ลิงก์รีเซ็ตกลับมาใน response ตรงๆ
+// ให้ frontend โชว์ลิงก์ในหน้าเว็บแทนการรอรับอีเมล เหมือนโหมดจำลองจ่ายเงิน
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: "กรุณากรอกอีเมล" });
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    return res.status(404).json({ error: "ไม่พบบัญชีที่ใช้อีเมลนี้" });
+  }
+
+  const resetToken = crypto.randomBytes(24).toString("hex");
+  const resetTokenExpiry = new Date(Date.now() + RESET_TOKEN_TTL_MS);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { resetToken, resetTokenExpiry },
+  });
+
+  res.json({ resetToken });
+});
+
+router.post("/reset-password", async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ error: "ข้อมูลไม่ครบถ้วน" });
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: "รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร" });
+  }
+
+  const user = await prisma.user.findFirst({ where: { resetToken: token } });
+  if (!user || !user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+    return res.status(400).json({ error: "ลิงก์รีเซ็ตรหัสผ่านไม่ถูกต้องหรือหมดอายุแล้ว" });
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { password: hashed, resetToken: null, resetTokenExpiry: null },
+  });
 
   res.json({ success: true });
 });

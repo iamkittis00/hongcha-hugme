@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { api } from "../lib/api";
+import ProductImage from "../components/ProductImage";
 
 const translations = {
   th: {
@@ -621,9 +622,12 @@ export default function Checkout() {
             {items.map((item) => (
               <div key={`${item.productId}-${item.size}`} className="flex items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-12 h-12 bg-hugme-image border border-hugme-border rounded flex items-center justify-center text-[9px] text-content-muted shrink-0">
-                    {item.imagePlaceholder}
-                  </div>
+                  <ProductImage
+                    src={item.imageUrl}
+                    alt={item.name}
+                    placeholder={item.imagePlaceholder}
+                    className="w-12 h-12 border border-hugme-border rounded text-[9px] shrink-0"
+                  />
                   <div className="flex flex-col">
                     <span className="font-bold text-content-primary">{item.name}</span>
                     <span className="text-content-muted text-[11px]">
