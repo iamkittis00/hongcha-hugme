@@ -7,6 +7,7 @@ import orderRoutes from "./src/routes/orders.js";
 import reviewRoutes from "./src/routes/reviews.js";
 import addressRoutes from "./src/routes/addresses.js";
 import paymentMethodRoutes from "./src/routes/paymentMethods.js";
+import adminRoutes from "./src/routes/admin.js";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/payment-methods", paymentMethodRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

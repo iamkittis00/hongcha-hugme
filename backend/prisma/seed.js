@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,7 @@ const products = [
     category: "ชาเขียวมัทฉะ",
     caffeine: "ระดับสูง",
     imagePlaceholder: "[ มัทฉะ ]",
+    imageUrl: "https://images.pexels.com/photos/8004565/pexels-photo-8004565.jpeg?cs=srgb&dl=pexels-darina-belonogova-8004565.jpg&fm=jpg",
   },
   {
     id: 2,
@@ -23,6 +25,7 @@ const products = [
     category: "ชาอู่หลง",
     caffeine: "ระดับปานกลาง",
     imagePlaceholder: "[ อู๋หลง ]",
+    imageUrl: "https://images.pexels.com/photos/6351882/pexels-photo-6351882.jpeg",
   },
   {
     id: 3,
@@ -33,6 +36,7 @@ const products = [
     category: "ชาดำ",
     caffeine: "ระดับสูง",
     imagePlaceholder: "[ ชาดำ ]",
+    imageUrl: "https://images.pexels.com/photos/31959376/pexels-photo-31959376.jpeg?cs=srgb&dl=pexels-dsgc-2151967151-31959376.jpg&fm=jpg",
   },
   {
     id: 4,
@@ -43,6 +47,7 @@ const products = [
     category: "ชามะลิ",
     caffeine: "ระดับปานกลาง",
     imagePlaceholder: "[ ชามะลิ ]",
+    imageUrl: "https://images.pexels.com/photos/7138780/pexels-photo-7138780.jpeg?cs=srgb&dl=pexels-filirovska-7138780.jpg&fm=jpg",
   },
   {
     id: 5,
@@ -53,6 +58,7 @@ const products = [
     category: "ชากุหลาบ",
     caffeine: "ไม่มีคาเฟอีน",
     imagePlaceholder: "[ ชากุหลาบ ]",
+    imageUrl: "https://images.pexels.com/photos/33781558/pexels-photo-33781558.jpeg?cs=srgb&dl=pexels-zulfugarkarimov-33781558.jpg&fm=jpg",
   },
   {
     id: 6,
@@ -63,6 +69,7 @@ const products = [
     category: "ชาเก๊กฮวย",
     caffeine: "ไม่มีคาเฟอีน",
     imagePlaceholder: "[ ชาเก๊กฮวย ]",
+    imageUrl: "https://images.pexels.com/photos/6913382/pexels-photo-6913382.jpeg?cs=srgb&dl=pexels-teona-swift-6913382.jpg&fm=jpg",
   },
   {
     id: 7,
@@ -73,6 +80,7 @@ const products = [
     category: "ชาอัญชัน",
     caffeine: "ไม่มีคาเฟอีน",
     imagePlaceholder: "[ ชาอัญชัน ]",
+    imageUrl: "https://images.pexels.com/photos/34439034/pexels-photo-34439034.jpeg?cs=srgb&dl=pexels-masuma-rahaman-437541976-34439034.jpg&fm=jpg",
   },
   {
     id: 8,
@@ -83,6 +91,7 @@ const products = [
     category: "ชาหญ้าหวาน",
     caffeine: "ไม่มีคาเฟอีน",
     imagePlaceholder: "[ ชาหญ้าหวาน ]",
+    imageUrl: "https://images.pexels.com/photos/34717619/pexels-photo-34717619.jpeg?cs=srgb&dl=pexels-martabranco-34717619.jpg&fm=jpg",
   },
   {
     id: 9,
@@ -93,6 +102,7 @@ const products = [
     category: "ชาใบเตย",
     caffeine: "ไม่มีคาเฟอีน",
     imagePlaceholder: "[ ชาใบเตย ]",
+    imageUrl: "https://images.pexels.com/photos/5857658/pexels-photo-5857658.jpeg",
   },
   {
     id: 10,
@@ -103,6 +113,7 @@ const products = [
     category: "ชาตะไคร้",
     caffeine: "ไม่มีคาเฟอีน",
     imagePlaceholder: "[ ชาตะไคร้ ]",
+    imageUrl: "https://images.pexels.com/photos/10280078/pexels-photo-10280078.jpeg?cs=srgb&dl=pexels-jamaludin-muh-137935755-10280078.jpg&fm=jpg",
   },
 ];
 
@@ -114,7 +125,26 @@ async function main() {
       create: product,
     });
   }
+
+  // upsert ด้วย id ตายตัวไม่ได้ขยับ sequence ของ autoincrement ให้
+  // ต้อง sync เองไม่งั้น product ใหม่ที่สร้างทีหลัง (เช่นจากแผงแอดมิน) จะชน id เดิม
+  await prisma.$executeRawUnsafe(
+    `SELECT setval(pg_get_serial_sequence('"Product"', 'id'), COALESCE((SELECT MAX(id) FROM "Product"), 1))`
+  );
   console.log(`Seeded ${products.length} products.`);
+
+  const adminPassword = await bcrypt.hash("admin123456", 10);
+  await prisma.user.upsert({
+    where: { email: "admin@hongcha.demo" },
+    update: { role: "admin" },
+    create: {
+      name: "ผู้ดูแลระบบ (Admin)",
+      email: "admin@hongcha.demo",
+      password: adminPassword,
+      role: "admin",
+    },
+  });
+  console.log("Seeded admin account: admin@hongcha.demo / admin123456");
 }
 
 main()

@@ -8,6 +8,7 @@ const translations = {
   th: {
     account: "บัญชีของฉัน",
     payment: "การชำระเงิน",
+    admin: "แผงควบคุมแอดมิน",
     language: "ภาษา",
     logout: "ออกจากระบบ",
     thai: "ไทย",
@@ -16,6 +17,7 @@ const translations = {
   en: {
     account: "My Account",
     payment: "Payment",
+    admin: "Admin Panel",
     language: "Language",
     logout: "Log Out",
     thai: "Thai",
@@ -24,7 +26,7 @@ const translations = {
 };
 
 export default function AccountDropdown() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const { lang, setLang } = useLanguage();
   const t = translations[lang];
 
@@ -71,7 +73,7 @@ export default function AccountDropdown() {
           <div className="flex items-center gap-3 pb-2.5 mb-2 border-b border-hugme-border px-1">
             <FiUser size={22} className="text-content-primary shrink-0" />
             <span className="font-semibold text-content-primary truncate">
-              {user?.name || "Test TEST"}
+              {user?.name || t.account}
             </span>
           </div>
 
@@ -88,7 +90,7 @@ export default function AccountDropdown() {
             </Link>
 
             <Link
-              to="/checkout"
+              to="/payment"
               onClick={() => {
                 setOpen(false);
                 setShowLangSubmenu(false);
@@ -97,6 +99,19 @@ export default function AccountDropdown() {
             >
               {t.payment}
             </Link>
+
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => {
+                  setOpen(false);
+                  setShowLangSubmenu(false);
+                }}
+                className="px-2 py-1.5 rounded-lg text-content-primary hover:bg-gray-100 transition-colors duration-150"
+              >
+                {t.admin}
+              </Link>
+            )}
 
             <div
               className="relative group"

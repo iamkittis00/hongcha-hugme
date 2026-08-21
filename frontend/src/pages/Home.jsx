@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
+import ProductImage from "../components/ProductImage";
 
 const AUTO_SCROLL_MS = 3200;
 
@@ -170,9 +171,12 @@ export default function Home() {
                   className="bg-white rounded-xl border border-hugme-border p-4 flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow shrink-0 w-[70%] xs:w-[45%] sm:w-[31%] lg:w-[23%] snap-start"
                 >
                   <Link to={`/product/${prod.id}`}>
-                    <div className="w-full h-44 bg-hugme-image rounded-lg flex items-center justify-center text-content-muted text-xs font-medium mb-3">
-                      {prod.imagePlaceholder}
-                    </div>
+                    <ProductImage
+                      src={prod.imageUrl}
+                      alt={prod.title}
+                      placeholder={prod.imagePlaceholder}
+                      className="w-full h-44 rounded-lg mb-3"
+                    />
                     <h3 className="font-bold text-base text-content-primary">{prod.title}</h3>
                     <span className="text-content-muted text-xs block mb-2">{prod.subtitle}</span>
                     <div className="flex justify-between items-center mb-3">

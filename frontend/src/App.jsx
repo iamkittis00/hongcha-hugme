@@ -12,6 +12,8 @@ import Reviews from "./pages/Reviews";
 import About from "./pages/About";
 import Account from "./pages/Account";
 import Payment from "./pages/Payment";
+import Admin from "./pages/Admin";
+import ResetPassword from "./pages/ResetPassword";
 import Login from "./pages/login";
 import ModalLogin from "./components/ModalLogin";
 import ModalRegister from "./components/ModalRegister";
@@ -40,6 +42,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/account" element={<Account />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </main>
