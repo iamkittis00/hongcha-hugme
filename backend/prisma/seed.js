@@ -3,135 +3,108 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+const FLAVORS_FULL = [
+  "ชากุหลาบ",
+  "ชาเก๊กฮวยเหลือง",
+  "ชาอัญชัน",
+  "ชาหญ้าหวาน",
+  "ชาใบเตย",
+  "ชาตะไคร้",
+  "ชามิ้นท์",
+  "ชาขิง",
+  "ชาดาวเรือง",
+];
+
 const products = [
   {
     id: 1,
-    title: "ชาเขียวมัทฉะพรีเมียม",
-    subtitle: "Premium Grade Uji Matcha Green Tea",
+    title: "ชา (ถุงซิป)",
+    subtitle: "Organic Herbal Tea - Zip Bag",
     description:
-      "ใบชาเกรดพรีเมียม นำเข้าจากเกียวโต ให้สีเขียวเข้ม รสชาติกลมกล่อมอมอุมามิแท้ๆ กาเฟอีนกำลังดี เหมาะสำหรับทำมัทฉะลาเต้ร้อนหรือเย็น",
-    price: 320,
-    category: "ชาเขียวมัทฉะ",
-    caffeine: "ระดับสูง",
-    imagePlaceholder: "[ มัทฉะ ]",
-    imageUrl: "https://images.pexels.com/photos/8004565/pexels-photo-8004565.jpeg?cs=srgb&dl=pexels-darina-belonogova-8004565.jpg&fm=jpg",
+      "ชาสมุนไพรออร์แกนิกบรรจุถุงซิปล็อค เก็บง่าย พกพาสะดวก คัดสรรดอกไม้และสมุนไพรแห้งคุณภาพดีจากสวนฮักมี ออร์แกนิกฟาร์ม เลือกรสชาติได้ตามชอบ",
+    price: 180,
+    category: "ถุงซิป",
+    caffeine: null,
+    imagePlaceholder: "[ ชา ถุงซิป ]",
+    imageUrl: "/products/thungzip-1.webp",
+    images: ["/products/thungzip-1.webp", "/products/thungzip-2.webp", "/products/thungzip-3.webp", "/products/thungzip-4.webp"],
+    flavors: FLAVORS_FULL,
   },
   {
     id: 2,
-    title: "ชาอู่หลงทองสายน้ำผึ้ง",
-    subtitle: "Golden Honey Oolong Tea",
-    description: "ชาอู่หลงกลิ่นน้ำผึ้งละมุน ผ่านการหมักอย่างพิถีพิถัน รสชาติหอมหวานติดปลายลิ้น",
-    price: 280,
-    category: "ชาอู่หลง",
-    caffeine: "ระดับปานกลาง",
-    imagePlaceholder: "[ อู๋หลง ]",
-    imageUrl: "https://images.pexels.com/photos/6351882/pexels-photo-6351882.jpeg",
+    title: "ชา (กระปุกแก้ว)",
+    subtitle: "Premium Tea Collection - Glass Jar",
+    description:
+      "ชาสมุนไพรออร์แกนิกบรรจุกระปุกแก้วพรีเมียม เก็บกลิ่นหอมได้ดี เหมาะเป็นของฝากหรือใช้ในบ้าน คัดสรรดอกไม้และสมุนไพรแห้งคุณภาพดีจากสวนฮักมี ออร์แกนิกฟาร์ม",
+    price: 169,
+    category: "กระปุกแก้ว",
+    caffeine: null,
+    imagePlaceholder: "[ ชา กระปุกแก้ว ]",
+    imageUrl: "/products/kapukkaew-1.webp",
+    images: ["/products/kapukkaew-1.webp", "/products/kapukkaew-2.webp", "/products/kapukkaew-3.webp", "/products/kapukkaew-4.webp"],
+    flavors: [...FLAVORS_FULL, "ชาอัสสัม", "ชาอัสสัมมะลิ"],
   },
   {
     id: 3,
-    title: "ชาดำอัสสัมคลาสสิก",
-    subtitle: "Assam Black Tea",
-    description: "ชาดำรสชาติเข้มข้น กลิ่นหอมคลาสสิก เหมาะสำหรับชงร้อนหรือทำชาเย็น/ชานม",
-    price: 240,
-    category: "ชาดำ",
-    caffeine: "ระดับสูง",
-    imagePlaceholder: "[ ชาดำ ]",
-    imageUrl: "https://images.pexels.com/photos/31959376/pexels-photo-31959376.jpeg?cs=srgb&dl=pexels-dsgc-2151967151-31959376.jpg&fm=jpg",
+    title: "ชา (กระปุกพลาสติก)",
+    subtitle: "Organic Herbal Tea - Plastic Jar",
+    description:
+      "ชาสมุนไพรออร์แกนิกบรรจุกระปุกพลาสติกใส น้ำหนักเบา ราคาประหยัด เหมาะสำหรับใช้ในชีวิตประจำวัน คัดสรรดอกไม้และสมุนไพรแห้งคุณภาพดีจากสวนฮักมี ออร์แกนิกฟาร์ม",
+    price: 269,
+    category: "กระปุกพลาสติก",
+    caffeine: null,
+    imagePlaceholder: "[ ชา กระปุกพลาสติก ]",
+    imageUrl: "/products/kapukplastic-1.webp",
+    images: ["/products/kapukplastic-1.webp", "/products/kapukplastic-2.webp", "/products/kapukplastic-3.webp", "/products/kapukplastic-4.webp"],
+    flavors: FLAVORS_FULL,
   },
   {
     id: 4,
-    title: "ชามะลิหอมคัดพิเศษ",
-    subtitle: "Jasmine Scented Tea",
-    description: "ชาเขียวอบกลิ่นดอกมะลิสด หอมละมุน ดื่มสบาย เหมาะกับทุกมื้ออาหาร",
-    price: 190,
-    category: "ชามะลิ",
-    caffeine: "ระดับปานกลาง",
-    imagePlaceholder: "[ ชามะลิ ]",
-    imageUrl: "https://images.pexels.com/photos/7138780/pexels-photo-7138780.jpeg?cs=srgb&dl=pexels-filirovska-7138780.jpg&fm=jpg",
+    title: "ชา (ขายส่ง/กิโล)",
+    subtitle: "Wholesale Mixed Tea - Per Kilogram",
+    description:
+      "ชาโฮ๊ะ (Mixed Tea) สูตรผสมดอกไม้และสมุนไพรหลากชนิด บรรจุแบบขายส่งต่อกิโลกรัม คุ้มค่าสำหรับร้านค้าหรือผู้ที่ดื่มเป็นประจำ จากสวนฮักมี ออร์แกนิกฟาร์ม",
+    price: 1500,
+    category: "ขายส่ง/กิโล",
+    caffeine: null,
+    imagePlaceholder: "[ ชา ขายส่ง/กิโล ]",
+    imageUrl: "/products/khaisong-1.webp",
+    images: ["/products/khaisong-1.webp", "/products/khaisong-2.webp", "/products/khaisong-3.webp", "/products/khaisong-4.webp"],
+    flavors: ["ชาโฮ๊ะ", "ชาอัญชัน", "ชามิ้นต์", "ชาตะไคร้", "ชากุหลาบ", "หญ้าหวาน"],
   },
   {
     id: 5,
-    title: "ชากุหลาบฝรั่งเศส",
-    subtitle: "French Rose Tea",
-    description: "กลีบกุหลาบฝรั่งเศสแท้ หอมละมุน ช่วยผ่อนคลาย ไม่มีคาเฟอีน ดื่มได้ทุกเวลา",
-    price: 260,
-    category: "ชากุหลาบ",
-    caffeine: "ไม่มีคาเฟอีน",
-    imagePlaceholder: "[ ชากุหลาบ ]",
-    imageUrl: "https://images.pexels.com/photos/33781558/pexels-photo-33781558.jpeg?cs=srgb&dl=pexels-zulfugarkarimov-33781558.jpg&fm=jpg",
-  },
-  {
-    id: 6,
-    title: "ชาเก๊กฮวยป่าธรรมชาติ",
-    subtitle: "Wild Chrysanthemum Tea",
-    description: "ดอกเก๊กฮวยป่าคัดพิเศษ รสชาติหวานอมขมนิดๆ ช่วยดับร้อนในร่างกาย",
-    price: 160,
-    category: "ชาเก๊กฮวย",
-    caffeine: "ไม่มีคาเฟอีน",
-    imagePlaceholder: "[ ชาเก๊กฮวย ]",
-    imageUrl: "https://images.pexels.com/photos/6913382/pexels-photo-6913382.jpeg?cs=srgb&dl=pexels-teona-swift-6913382.jpg&fm=jpg",
-  },
-  {
-    id: 7,
-    title: "ชาอัญชันออร์แกนิก",
-    subtitle: "Organic Butterfly Pea Tea",
-    description: "ดอกอัญชันออร์แกนิกแท้ 100% สีสวยจากธรรมชาติ ดื่มคู่มะนาวสดชื่นยิ่งขึ้น",
+    title: "ชาดอกไม้ (Classic Menu)",
+    subtitle: "Classic Flower Tea Menu",
+    description:
+      "เมนูคลาสสิกยอดนิยมของสวนฮักมี ออร์แกนิกฟาร์ม เลือกได้ระหว่างกุหลาบ เก๊กฮวย หรืออัญชัน บรรจุในกระป๋องพรีเมียมพร้อมมอบเป็นของขวัญ",
     price: 200,
-    category: "ชาอัญชัน",
-    caffeine: "ไม่มีคาเฟอีน",
-    imagePlaceholder: "[ ชาอัญชัน ]",
-    imageUrl: "https://images.pexels.com/photos/34439034/pexels-photo-34439034.jpeg?cs=srgb&dl=pexels-masuma-rahaman-437541976-34439034.jpg&fm=jpg",
-  },
-  {
-    id: 8,
-    title: "ชาหญ้าหวานสมุนไพร",
-    subtitle: "Stevia Herbal Tea",
-    description: "ชาสมุนไพรผสมหญ้าหวานธรรมชาติ หวานละมุนโดยไม่ใช้น้ำตาล เหมาะกับสายสุขภาพ",
-    price: 150,
-    category: "ชาหญ้าหวาน",
-    caffeine: "ไม่มีคาเฟอีน",
-    imagePlaceholder: "[ ชาหญ้าหวาน ]",
-    imageUrl: "https://images.pexels.com/photos/34717619/pexels-photo-34717619.jpeg?cs=srgb&dl=pexels-martabranco-34717619.jpg&fm=jpg",
-  },
-  {
-    id: 9,
-    title: "ชาใบเตยหอมสดชื่น",
-    subtitle: "Pandan Leaf Tea",
-    description: "ใบเตยหอมธรรมชาติ กลิ่นหอมสดชื่น ดื่มเย็นชื่นใจ ไม่มีคาเฟอีน",
-    price: 150,
-    category: "ชาใบเตย",
-    caffeine: "ไม่มีคาเฟอีน",
-    imagePlaceholder: "[ ชาใบเตย ]",
-    imageUrl: "https://images.pexels.com/photos/5857658/pexels-photo-5857658.jpeg",
-  },
-  {
-    id: 10,
-    title: "ชาตะไคร้เพื่อสุขภาพ",
-    subtitle: "Lemongrass Tea",
-    description: "ตะไคร้แท้จากไร่ออร์แกนิก ช่วยขับลม ดื่มง่าย หอมสดชื่นทุกจิบ",
-    price: 150,
-    category: "ชาตะไคร้",
-    caffeine: "ไม่มีคาเฟอีน",
-    imagePlaceholder: "[ ชาตะไคร้ ]",
-    imageUrl: "https://images.pexels.com/photos/10280078/pexels-photo-10280078.jpeg?cs=srgb&dl=pexels-jamaludin-muh-137935755-10280078.jpg&fm=jpg",
+    category: "เมนูพิเศษ",
+    caffeine: null,
+    imagePlaceholder: "[ ชาดอกไม้ Classic Menu ]",
+    imageUrl: "/products/classic-1.png",
+    images: ["/products/classic-1.png", "/products/classic-2.png", "/products/classic-3.png"],
+    flavors: ["ชากุหลาบ", "ชาเก๊กฮวย", "ชาอัญชัน"],
   },
 ];
 
 async function main() {
+  // ลบข้อมูลออเดอร์/รีวิวเดิมก่อน เพราะแคตตาล็อกสินค้าเปลี่ยนโครงสร้างทั้งหมด
+  // (จาก 10 สินค้าสมมติแยกรสชาติ เป็น 5 สินค้าจริงแยกตามบรรจุภัณฑ์)
+  // ออเดอร์/รีวิวเดิมจะอ้างอิงสินค้าที่ไม่มีอยู่แล้ว เก็บไว้ไม่มีประโยชน์
+  await prisma.orderItem.deleteMany({});
+  await prisma.order.deleteMany({});
+  await prisma.review.deleteMany({});
+  await prisma.product.deleteMany({});
+
   for (const product of products) {
-    await prisma.product.upsert({
-      where: { id: product.id },
-      update: product,
-      create: product,
-    });
+    await prisma.product.create({ data: product });
   }
 
-  // upsert ด้วย id ตายตัวไม่ได้ขยับ sequence ของ autoincrement ให้
-  // ต้อง sync เองไม่งั้น product ใหม่ที่สร้างทีหลัง (เช่นจากแผงแอดมิน) จะชน id เดิม
   await prisma.$executeRawUnsafe(
     `SELECT setval(pg_get_serial_sequence('"Product"', 'id'), COALESCE((SELECT MAX(id) FROM "Product"), 1))`
   );
-  console.log(`Seeded ${products.length} products.`);
+  console.log(`Seeded ${products.length} products (real HugMe catalog).`);
 
   const adminPassword = await bcrypt.hash("REMOVED-ADMIN-PASSWORD", 10);
   await prisma.user.upsert({

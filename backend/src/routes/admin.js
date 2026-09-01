@@ -17,7 +17,7 @@ router.get("/products", async (req, res) => {
 });
 
 router.post("/products", async (req, res) => {
-  const { title, subtitle, description, price, category, caffeine, imagePlaceholder, imageUrl } = req.body;
+  const { title, subtitle, description, price, category, caffeine, imagePlaceholder, imageUrl, images, flavors } = req.body;
 
   if (!title || !subtitle || !description || !price || !category || !imagePlaceholder) {
     return res.status(400).json({ error: "กรุณากรอกข้อมูลสินค้าให้ครบถ้วน" });
@@ -33,6 +33,8 @@ router.post("/products", async (req, res) => {
       caffeine: caffeine || null,
       imagePlaceholder,
       imageUrl: imageUrl || null,
+      images: Array.isArray(images) ? images : [],
+      flavors: Array.isArray(flavors) ? flavors : [],
     },
   });
 
@@ -41,7 +43,7 @@ router.post("/products", async (req, res) => {
 
 router.patch("/products/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { title, subtitle, description, price, category, caffeine, imagePlaceholder, imageUrl } = req.body;
+  const { title, subtitle, description, price, category, caffeine, imagePlaceholder, imageUrl, images, flavors } = req.body;
 
   const existing = await prisma.product.findUnique({ where: { id } });
   if (!existing) {
@@ -59,6 +61,8 @@ router.patch("/products/:id", async (req, res) => {
       caffeine: caffeine ?? undefined,
       imagePlaceholder,
       imageUrl: imageUrl ?? undefined,
+      images: Array.isArray(images) ? images : undefined,
+      flavors: Array.isArray(flavors) ? flavors : undefined,
     },
   });
 

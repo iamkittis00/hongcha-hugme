@@ -26,7 +26,9 @@ const translations = {
     categoryLabel: "หมวดหมู่",
     caffeineLabel: "ระดับคาเฟอีน",
     imagePlaceholderLabel: "ข้อความ placeholder (เช่น [ มัทฉะ ])",
-    imageUrlLabel: "ลิงก์รูปภาพ (ไม่บังคับ)",
+    imageUrlLabel: "ลิงก์รูปภาพหลัก (ไม่บังคับ)",
+    imagesLabel: "ลิงก์รูปแกลเลอรี (1 รูปต่อบรรทัด, ไม่บังคับ)",
+    flavorsLabel: "รสชาติให้เลือก (คั่นด้วยจุลภาค, ไม่บังคับ)",
     save: "บันทึก",
     cancel: "ยกเลิก",
     edit: "แก้ไข",
@@ -68,7 +70,9 @@ const translations = {
     categoryLabel: "Category",
     caffeineLabel: "Caffeine Level",
     imagePlaceholderLabel: "Placeholder text (e.g. [ Matcha ])",
-    imageUrlLabel: "Image URL (optional)",
+    imageUrlLabel: "Main image URL (optional)",
+    imagesLabel: "Gallery image URLs (one per line, optional)",
+    flavorsLabel: "Flavor options (comma-separated, optional)",
     save: "Save",
     cancel: "Cancel",
     edit: "Edit",
@@ -104,6 +108,8 @@ const emptyProductForm = {
   caffeine: "",
   imagePlaceholder: "",
   imageUrl: "",
+  images: "",
+  flavors: "",
 };
 
 export default function Admin() {
@@ -162,6 +168,8 @@ export default function Admin() {
       caffeine: prod.caffeine || "",
       imagePlaceholder: prod.imagePlaceholder,
       imageUrl: prod.imageUrl || "",
+      images: (prod.images || []).join("\n"),
+      flavors: (prod.flavors || []).join(", "),
     });
     setProductError("");
     setProductFormOpen(true);
@@ -170,11 +178,16 @@ export default function Admin() {
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     setProductError("");
+    const payload = {
+      ...productForm,
+      images: productForm.images.split("\n").map((s) => s.trim()).filter(Boolean),
+      flavors: productForm.flavors.split(",").map((s) => s.trim()).filter(Boolean),
+    };
     try {
       if (editingProductId) {
-        await api.patch(`/admin/products/${editingProductId}`, productForm, token);
+        await api.patch(`/admin/products/${editingProductId}`, payload, token);
       } else {
-        await api.post("/admin/products", productForm, token);
+        await api.post("/admin/products", payload, token);
       }
       setProductFormOpen(false);
       loadProducts();
@@ -278,6 +291,10 @@ export default function Admin() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input required placeholder={t.imagePlaceholderLabel} value={productForm.imagePlaceholder} onChange={(e) => setProductForm({ ...productForm, imagePlaceholder: e.target.value })} className="px-3.5 py-2 rounded-xl border border-hugme-border bg-white text-sm focus:outline-none focus:border-matcha" />
                 <input placeholder={t.imageUrlLabel} value={productForm.imageUrl} onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })} className="px-3.5 py-2 rounded-xl border border-hugme-border bg-white text-sm focus:outline-none focus:border-matcha" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <textarea rows={3} placeholder={t.imagesLabel} value={productForm.images} onChange={(e) => setProductForm({ ...productForm, images: e.target.value })} className="px-3.5 py-2 rounded-xl border border-hugme-border bg-white text-sm focus:outline-none focus:border-matcha resize-none" />
+                <input placeholder={t.flavorsLabel} value={productForm.flavors} onChange={(e) => setProductForm({ ...productForm, flavors: e.target.value })} className="px-3.5 py-2 rounded-xl border border-hugme-border bg-white text-sm focus:outline-none focus:border-matcha" />
               </div>
               <div className="flex gap-2">
                 <button type="submit" className="px-5 py-2 bg-matcha hover:bg-matcha-hover text-white font-bold text-xs rounded-lg transition-colors cursor-pointer">{t.save}</button>

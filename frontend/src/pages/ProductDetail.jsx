@@ -9,14 +9,12 @@ import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
 import ProductImage from "../components/ProductImage";
 
-const packageSizes = ["50g", "100g", "200g"];
-
 const translations = {
   th: {
     loadingProduct: "กำลังโหลดสินค้า...",
     productNotFound: "ไม่พบสินค้านี้",
     breadcrumbHome: "หน้าแรก (Home)",
-    packageSizeLabel: "ขนาดบรรจุภัณฑ์ / Package Size",
+    packageSizeLabel: "เลือกรสชาติ / Flavor",
     quantityLabel: "จำนวน / Quantity",
     addToCart: "เพิ่มลงตะกร้า / Add to Cart",
     buyNow: "ซื้อทันที / Buy Now",
@@ -48,7 +46,7 @@ const translations = {
     loadingProduct: "Loading product...",
     productNotFound: "Product not found",
     breadcrumbHome: "Home",
-    packageSizeLabel: "Package Size",
+    packageSizeLabel: "Choose Flavor",
     quantityLabel: "Quantity",
     addToCart: "Add to Cart",
     buyNow: "Buy Now",
@@ -87,10 +85,11 @@ export default function ProductDetail() {
   const { lang } = useLanguage();
   const t = translations[lang];
 
-  const [selectedSize, setSelectedSize] = useState("100g");
+  const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("reviews");
   const [addedMessage, setAddedMessage] = useState("");
+  const [activeImage, setActiveImage] = useState(0);
 
   const [product, setProduct] = useState(null);
   const [rating, setRating] = useState({ average: 0, count: 0, breakdown: [] });
@@ -110,6 +109,7 @@ export default function ProductDetail() {
         setProduct(detail.product);
         setRating(reviewData.rating);
         setReviews(reviewData.reviews);
+        setSelectedSize(detail.product.flavors?.[0] || "");
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -117,9 +117,11 @@ export default function ProductDetail() {
 
   useEffect(() => {
     loadProduct();
-    setSelectedSize("100g");
     setQuantity(1);
+    setActiveImage(0);
   }, [loadProduct]);
+
+  const gallery = product?.images?.length ? product.images : product?.imageUrl ? [product.imageUrl] : [];
 
   const handleAddToCart = () => {
     addItem(product, quantity, selectedSize);
@@ -185,12 +187,28 @@ export default function ProductDetail() {
         <div className="flex flex-col gap-4">
           <div className="w-full h-80 sm:h-96 rounded-xl border border-hugme-border relative overflow-hidden">
             <ProductImage
-              src={product.imageUrl}
+              src={gallery[activeImage]}
               alt={product.title}
               placeholder={product.imagePlaceholder}
               className="w-full h-full text-sm"
             />
           </div>
+          {gallery.length > 1 && (
+            <div className="flex gap-3">
+              {gallery.map((src, idx) => (
+                <button
+                  key={src}
+                  type="button"
+                  onClick={() => setActiveImage(idx)}
+                  className={`w-16 h-16 sm:w-20 sm:h-20 rounded-lg border-2 overflow-hidden shrink-0 transition-colors cursor-pointer ${
+                    activeImage === idx ? "border-matcha" : "border-hugme-border hover:border-matcha/50"
+                  }`}
+                >
+                  <ProductImage src={src} alt={`${product.title} ${idx + 1}`} className="w-full h-full" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col text-left justify-start gap-4">
@@ -212,27 +230,29 @@ export default function ProductDetail() {
 
           <p className="text-content-muted text-xs sm:text-sm leading-relaxed">{product.description}</p>
 
-          <div>
-            <label className="block text-content-primary font-bold text-xs sm:text-sm mb-2">
-              {t.packageSizeLabel}
-            </label>
-            <div className="flex gap-3">
-              {packageSizes.map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => setSelectedSize(size)}
-                  className={`px-5 py-2 rounded-lg border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                    selectedSize === size
-                      ? "bg-matcha text-white border-matcha"
-                      : "bg-white text-content-primary border-hugme-border hover:border-matcha"
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
+          {product.flavors?.length > 0 && (
+            <div>
+              <label className="block text-content-primary font-bold text-xs sm:text-sm mb-2">
+                {t.packageSizeLabel}
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {product.flavors.map((flavor) => (
+                  <button
+                    key={flavor}
+                    type="button"
+                    onClick={() => setSelectedSize(flavor)}
+                    className={`px-4 py-2 rounded-lg border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                      selectedSize === flavor
+                        ? "bg-matcha text-white border-matcha"
+                        : "bg-white text-content-primary border-hugme-border hover:border-matcha"
+                    }`}
+                  >
+                    {flavor}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <label className="block text-content-primary font-bold text-xs sm:text-sm mb-2">

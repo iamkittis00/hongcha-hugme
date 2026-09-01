@@ -55,10 +55,10 @@ export default function Home() {
   const scrollRef = useRef(null);
 
   const categories = [
-    { title: "ชากุหลาบ", subtitle: "Green Tea", placeholder: "[ รูปหมวดหมู่ ชากุหลาบ ]" },
-    { title: "ชาเก๊กฮวย", subtitle: "Black Tea", placeholder: "[ รูปหมวดหมู่ ชาเก๊กฮวย ]" },
-    { title: "ชาอัญชัน", subtitle: "Herbal Tea", placeholder: "[ รูปหมวดหมู่ ชาอัญชัน ]" },
-    { title: "ชาดาวเรือง", subtitle: "Milk Tea", placeholder: "[ รูปหมวดหมู่ ชาดาวเรือง ]" },
+    { title: "ถุงซิป", subtitle: "Zip Bag", image: "/products/thungzip-4.webp" },
+    { title: "กระปุกแก้ว", subtitle: "Glass Jar", image: "/products/kapukkaew-4.webp" },
+    { title: "กระปุกพลาสติก", subtitle: "Plastic Jar", image: "/products/kapukplastic-4.webp" },
+    { title: "ขายส่ง/กิโล", subtitle: "Wholesale (kg)", image: "/products/khaisong-1.webp" },
   ];
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export default function Home() {
   const handleAddToCart = (e, product) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product, 1, "100g");
+    addItem(product, 1, product.flavors?.[0] || null);
     setAddedId(product.id);
     setTimeout(() => setAddedId(null), 1200);
   };
@@ -137,8 +137,8 @@ export default function Home() {
               to={`/products?category=${encodeURIComponent(cat.title)}`}
               className="bg-white rounded-xl border border-hugme-border p-4 flex flex-col items-center shadow-xs hover:shadow-md transition-shadow cursor-pointer group"
             >
-              <div className="w-full h-36 bg-hugme-image rounded-lg flex items-center justify-center text-content-muted text-xs font-medium mb-3">
-                {cat.placeholder}
+              <div className="w-full h-36 rounded-lg overflow-hidden mb-3">
+                <img src={cat.image} alt={cat.title} className="w-full h-full object-cover" />
               </div>
               <h3 className="font-bold text-base text-content-primary group-hover:text-matcha transition-colors">{cat.title}</h3>
               <span className="text-content-muted text-xs">{cat.subtitle}</span>

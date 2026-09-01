@@ -159,7 +159,7 @@ export default function Products() {
   };
 
   const handleAddToCart = (product) => {
-    addItem(product, 1, "100g");
+    addItem(product, 1, product.flavors?.[0] || null);
     setAddedId(product.id);
     setTimeout(() => setAddedId(null), 1200);
   };
@@ -302,6 +302,7 @@ export default function Products() {
             </div>
           </div>
 
+          {caffeineOptions.length > 0 && (
           <div>
             <h3 className="font-bold text-xs sm:text-sm text-content-primary mb-3">{t.caffeineTitle}</h3>
             <div className="flex flex-col gap-2.5">
@@ -324,6 +325,7 @@ export default function Products() {
               ))}
             </div>
           </div>
+          )}
         </aside>
 
         <main className="lg:col-span-3 flex flex-col gap-8">

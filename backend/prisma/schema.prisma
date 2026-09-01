@@ -54,7 +54,7 @@ model PaymentMethod {
 }
 
 model Product {
-  id               Int     @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   title            String
   subtitle         String
   description      String
@@ -63,6 +63,8 @@ model Product {
   caffeine         String?
   imagePlaceholder String
   imageUrl         String?
+  images           String[] @default([])
+  flavors          String[] @default([])
 
   orderItems OrderItem[]
   reviews    Review[]
