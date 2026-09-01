@@ -145,6 +145,18 @@ async function main() {
     },
   });
   console.log("Seeded admin account: admin@hongcha.demo / REMOVED-ADMIN-PASSWORD");
+
+  const demoPassword = await bcrypt.hash("REMOVED-DEMO-PASSWORD", 10);
+  await prisma.user.upsert({
+    where: { email: "demo@hongcha.demo" },
+    update: {},
+    create: {
+      name: "ผู้ใช้ทดลอง (Demo)",
+      email: "demo@hongcha.demo",
+      password: demoPassword,
+    },
+  });
+  console.log("Seeded demo customer account: demo@hongcha.demo / REMOVED-DEMO-PASSWORD");
 }
 
 main()

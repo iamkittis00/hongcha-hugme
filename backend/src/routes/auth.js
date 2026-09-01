@@ -9,13 +9,15 @@ const router = Router();
 
 const RESET_TOKEN_TTL_MS = 15 * 60 * 1000;
 
-// เช็คว่า request เข้ามาผ่าน localhost ของเครื่องที่รันเองไหม (nginx forward Host header มาให้ผ่าน
-// proxy_set_header Host $host ใน frontend/nginx.conf) ใช้กันไม่ให้ endpoint จำลอง forgot-password
-// เปิดเผย reset token ให้ใครก็ได้ที่เข้าถึงเว็บนี้ผ่าน LAN/เครือข่ายภายนอกตอนแชร์ demo ให้คนอื่นดู
-function isLocalRequest(req) {
-  const host = req.hostname;
-  return host === "localhost" || host === "127.0.0.1" || host === "::1";
-}
+// รายชื่ออีเมลบัญชีทดลองที่อนุญาตให้ endpoint จำลอง forgot-password เปิดเผย reset token ตรงๆ ได้
+// เว็บนี้ deploy ขึ้นโดเมนสาธารณะจริง (ไม่ใช่แค่ localhost) จึงต้องจำกัดไว้เฉพาะบัญชีที่ตั้งใจให้คนมาทดลองเล่น
+// ไม่งั้นใครก็เดาอีเมลลูกค้าจริงแล้วขอ token ไปยึดบัญชีได้ (ดู CVE ภายในที่แก้ไปก่อนหน้านี้)
+const DEMO_RESET_ALLOWLIST = new Set([
+  "admin@hongcha.demo",
+  "demo@hongcha.demo",
+  "demo.google@hongcha.demo",
+  "demo.facebook@hongcha.demo",
+]);
 
 function issueToken(user) {
   return jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -175,15 +177,15 @@ router.post("/forgot-password", async (req, res) => {
     data: { resetToken, resetTokenExpiry },
   });
 
-  // โหมดจำลอง: แสดง token ตรงๆ ให้เฉพาะตอนเข้าถึงผ่าน localhost ของเครื่องที่รันเองเท่านั้น
-  // ป้องกันไม่ให้ใครก็ได้ที่เข้าถึงเว็บผ่าน LAN/เครือข่ายภายนอก (เช่นตอนแชร์ demo ให้คนอื่นดู) ขอ
-  // reset token ของบัญชีคนอื่น (รวมถึงแอดมิน) แล้วยึดบัญชีไปได้โดยไม่ต้องมีสิทธิ์เข้าถึงอีเมลจริง
-  if (!isLocalRequest(req)) {
+  // โหมดจำลอง: แสดง token ตรงๆ ให้เฉพาะบัญชีทดลองที่กำหนดไว้ล่วงหน้าเท่านั้น (DEMO_RESET_ALLOWLIST)
+  // เว็บนี้อยู่บนโดเมนสาธารณะจริงแล้ว ถ้าเปิดให้ทุกอีเมลเห็น token ใครก็เดาอีเมลลูกค้าจริง
+  // แล้วขอ reset token ไปยึดบัญชีคนอื่นได้โดยไม่ต้องมีสิทธิ์เข้าถึงอีเมลจริงเลย
+  if (!DEMO_RESET_ALLOWLIST.has(email)) {
     return res.json({
       resetToken: null,
       blocked: true,
       error:
-        "สร้างลิงก์รีเซ็ตรหัสผ่านแล้ว แต่เว็บนี้ถูกเข้าถึงจากภายนอกเครื่อง (ไม่ใช่ localhost) จึงไม่แสดงลิงก์ที่นี่เพื่อความปลอดภัย กรุณาลองบนเครื่องที่รันเว็บนี้อยู่ หรือติดต่อผู้ดูแลระบบ",
+        "สร้างลิงก์รีเซ็ตรหัสผ่านแล้ว แต่เพื่อความปลอดภัย เว็บ demo นี้แสดงลิงก์ตรงๆ ให้เฉพาะบัญชีทดลองที่กำหนดไว้เท่านั้น (เช่น admin@hongcha.demo, demo@hongcha.demo) กรุณาติดต่อผู้ดูแลระบบสำหรับบัญชีอื่น",
     });
   }
 
