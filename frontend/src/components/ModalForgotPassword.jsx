@@ -34,14 +34,20 @@ export default function ModalForgotPassword({ isOpen = true, isModal = false, on
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [resetToken, setResetToken] = useState("");
+  const [blockedMessage, setBlockedMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setBlockedMessage("");
     setSubmitting(true);
     try {
       const data = await api.post("/auth/forgot-password", { email });
-      setResetToken(data.resetToken);
+      if (data.blocked) {
+        setBlockedMessage(data.error);
+      } else {
+        setResetToken(data.resetToken);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -59,7 +65,13 @@ export default function ModalForgotPassword({ isOpen = true, isModal = false, on
       title={t.title}
       subtitle={t.subtitle}
     >
-      {resetToken ? (
+      {blockedMessage ? (
+        <div className="w-full text-left flex flex-col gap-3">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-3 text-xs sm:text-sm text-amber-800">
+            {blockedMessage}
+          </div>
+        </div>
+      ) : resetToken ? (
         <div className="w-full text-left flex flex-col gap-3">
           <div className="bg-matcha-soft/30 border border-matcha/30 rounded-xl px-3.5 py-3 text-xs sm:text-sm text-content-primary">
             <p className="text-content-muted text-[11px] mb-2">{t.demoNote}</p>
