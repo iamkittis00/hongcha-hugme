@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
@@ -49,6 +50,7 @@ export default function ModalLogin({ isOpen = true, isModal = false, onClose, on
   const { login, loginWithProvider } = useAuth();
   const { lang } = useLanguage();
   const t = translations[lang];
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [email, setEmail] = useState("");
@@ -57,13 +59,23 @@ export default function ModalLogin({ isOpen = true, isModal = false, onClose, on
   const [submitting, setSubmitting] = useState(false);
   const [socialLoading, setSocialLoading] = useState("");
 
+  // แอดมินควรเจอหน้าจัดการข้อมูลทันทีหลัง login ไม่ใช่หน้าร้านแบบลูกค้าทั่วไป
+  const afterLogin = (loggedInUser) => {
+    if (loggedInUser?.role === "admin") {
+      onClose?.();
+      navigate("/admin");
+    } else {
+      (onSuccess || onClose)?.();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSubmitting(true);
     try {
-      await login(email, password);
-      (onSuccess || onClose)?.();
+      const loggedInUser = await login(email, password);
+      afterLogin(loggedInUser);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -75,8 +87,8 @@ export default function ModalLogin({ isOpen = true, isModal = false, onClose, on
     setError("");
     setSocialLoading(provider);
     try {
-      await loginWithProvider(provider);
-      (onSuccess || onClose)?.();
+      const loggedInUser = await loginWithProvider(provider);
+      afterLogin(loggedInUser);
     } catch (err) {
       setError(err.message);
     } finally {
