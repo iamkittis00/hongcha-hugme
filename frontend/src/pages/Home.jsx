@@ -6,6 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
 import ProductImage from "../components/ProductImage";
+import heroBanner from "../assets/hero-banner.webp";
 
 const AUTO_SCROLL_MS = 3200;
 
@@ -115,9 +116,12 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="w-full h-64 sm:h-80 bg-hugme-image rounded-xl border border-hugme-border flex items-center justify-center text-content-muted text-xs sm:text-sm font-medium p-6 relative overflow-hidden">
-            <div className="absolute inset-0 border border-content-muted/20 rotate-45 transform scale-150 pointer-events-none"></div>
-            <span>{t.heroImagePlaceholder}</span>
+          <div className="w-full h-64 sm:h-80 rounded-xl border border-hugme-border overflow-hidden">
+            <img
+              src={heroBanner}
+              alt={t.heroImagePlaceholder}
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </section>
