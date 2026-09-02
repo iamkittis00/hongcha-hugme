@@ -296,39 +296,55 @@ export default function ProductDetail() {
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div className="bg-white rounded-xl border border-hugme-border p-4 sm:p-5">
               <h3 className="font-bold text-sm sm:text-base text-content-primary mb-3">{t.writeReviewHeading}</h3>
-              <form onSubmit={handleReviewSubmit} className="flex flex-col gap-3">
-                {reviewError && (
-                  <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg px-3 py-2">
-                    {reviewError}
+
+              {isAuthenticated ? (
+                <form onSubmit={handleReviewSubmit} className="flex flex-col gap-3">
+                  {reviewError && (
+                    <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg px-3 py-2">
+                      {reviewError}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewForm((f) => ({ ...f, rating: star }))}
+                        aria-label={t.starAriaLabel(star)}
+                        className="cursor-pointer text-earth-gold"
+                      >
+                        <FiStar size={20} fill={star <= reviewForm.rating ? "currentColor" : "none"} />
+                      </button>
+                    ))}
                   </div>
-                )}
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setReviewForm((f) => ({ ...f, rating: star }))}
-                      className="cursor-pointer text-earth-gold"
-                    >
-                      <FiStar size={20} fill={star <= reviewForm.rating ? "currentColor" : "none"} />
-                    </button>
-                  ))}
+                  <textarea
+                    rows={3}
+                    value={reviewForm.comment}
+                    onChange={(e) => setReviewForm((f) => ({ ...f, comment: e.target.value }))}
+                    placeholder={t.reviewPlaceholderAuth}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-hugme-border bg-[#F9F8F6] text-content-primary text-xs sm:text-sm focus:outline-none focus:border-matcha focus:bg-white transition-colors resize-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={reviewSubmitting}
+                    className="self-start px-5 py-2.5 bg-matcha hover:bg-matcha-hover text-white font-bold text-xs sm:text-sm rounded-xl transition-colors cursor-pointer disabled:opacity-60"
+                  >
+                    {reviewSubmitting ? t.sendingReview : t.submitReview}
+                  </button>
+                </form>
+              ) : (
+                // ยังไม่ได้เข้าสู่ระบบ: ไม่ต้องโชว์ฟอร์มให้กรอกจนจบแล้วค่อยบอกว่าต้องล็อกอิน
+                <div className="bg-hugme-section border border-hugme-border rounded-xl px-4 py-4 flex flex-col items-start gap-3">
+                  <p className="text-content-muted text-xs sm:text-sm">{t.loginRequiredToReview}</p>
+                  <button
+                    type="button"
+                    onClick={() => openAuthModal("login")}
+                    className="px-5 py-2.5 bg-matcha hover:bg-matcha-hover text-white font-bold text-xs sm:text-sm rounded-xl transition-colors cursor-pointer"
+                  >
+                    {t.loginToReview}
+                  </button>
                 </div>
-                <textarea
-                  rows={3}
-                  value={reviewForm.comment}
-                  onChange={(e) => setReviewForm((f) => ({ ...f, comment: e.target.value }))}
-                  placeholder={isAuthenticated ? t.reviewPlaceholderAuth : t.reviewPlaceholderGuest}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-hugme-border bg-[#F9F8F6] text-content-primary text-xs sm:text-sm focus:outline-none focus:border-matcha focus:bg-white transition-colors resize-none"
-                />
-                <button
-                  type="submit"
-                  disabled={reviewSubmitting}
-                  className="self-start px-5 py-2.5 bg-matcha hover:bg-matcha-hover text-white font-bold text-xs sm:text-sm rounded-xl transition-colors cursor-pointer disabled:opacity-60"
-                >
-                  {isAuthenticated ? (reviewSubmitting ? t.sendingReview : t.submitReview) : t.loginToReview}
-                </button>
-              </form>
+              )}
             </div>
 
             <h3 className="font-bold text-base text-content-primary">
