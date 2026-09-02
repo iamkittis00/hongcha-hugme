@@ -9,6 +9,23 @@ import addressRoutes from "./src/routes/addresses.js";
 import paymentMethodRoutes from "./src/routes/paymentMethods.js";
 import adminRoutes from "./src/routes/admin.js";
 
+// ตรวจ env ที่จำเป็นตั้งแต่ตอน start และหยุดทันทีถ้าไม่ผ่าน
+// ดีกว่าปล่อยให้รันต่อด้วย secret อ่อนๆ แล้วมารู้ตอนโดนปลอม JWT
+const MIN_JWT_SECRET_LENGTH = 32;
+
+if (!process.env.DATABASE_URL) {
+  console.error("ไม่พบ DATABASE_URL — หยุดการทำงาน");
+  process.exit(1);
+}
+if (!process.env.JWT_SECRET) {
+  console.error("ไม่พบ JWT_SECRET — หยุดการทำงาน");
+  process.exit(1);
+}
+if (process.env.JWT_SECRET.length < MIN_JWT_SECRET_LENGTH) {
+  console.error(`JWT_SECRET สั้นเกินไป ต้องมีอย่างน้อย ${MIN_JWT_SECRET_LENGTH} ตัวอักษร — หยุดการทำงาน`);
+  process.exit(1);
+}
+
 const app = express();
 
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")

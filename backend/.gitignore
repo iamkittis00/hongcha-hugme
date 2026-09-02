@@ -1,2 +1,5 @@
 node_modules/
 .env
+
+# เครื่องมือใช้งานเองฝั่งผู้ดูแล ไม่ต้องขึ้น git (มีไว้รันกับ production DB โดยตรง)
+scripts/

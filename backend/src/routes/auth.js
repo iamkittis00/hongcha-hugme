@@ -9,15 +9,19 @@ const router = Router();
 
 const RESET_TOKEN_TTL_MS = 15 * 60 * 1000;
 
-// รายชื่ออีเมลบัญชีทดลองที่อนุญาตให้ endpoint จำลอง forgot-password เปิดเผย reset token ตรงๆ ได้
-// เว็บนี้ deploy ขึ้นโดเมนสาธารณะจริง (ไม่ใช่แค่ localhost) จึงต้องจำกัดไว้เฉพาะบัญชีที่ตั้งใจให้คนมาทดลองเล่น
-// ไม่งั้นใครก็เดาอีเมลลูกค้าจริงแล้วขอ token ไปยึดบัญชีได้ (ดู CVE ภายในที่แก้ไปก่อนหน้านี้)
-const DEMO_RESET_ALLOWLIST = new Set([
-  "admin@hongcha.demo",
-  "demo@hongcha.demo",
-  "demo.google@hongcha.demo",
-  "demo.facebook@hongcha.demo",
-]);
+// โหมดจำลอง forgot-password (แสดงลิงก์รีเซ็ตในหน้าเว็บแทนการส่งอีเมลจริง)
+// ต้องเปิดด้วย env เท่านั้น และ default = ปิด เพื่อไม่ให้ production เผลอเปิดค้างไว้
+// เดิมใช้ allowlist hardcode ซึ่งมีบัญชีแอดมินอยู่ด้วย ทำให้ใครก็ขอ token ของแอดมินไปยึดบัญชีได้
+const DEMO_REVEAL_RESET_TOKEN = process.env.DEMO_REVEAL_RESET_TOKEN === "true";
+
+// อีเมลบัญชีทดลองที่ยอมให้โหมดจำลองเปิดเผย token ได้ (ยังต้องเปิด DEMO_REVEAL_RESET_TOKEN ด้วย)
+// ห้ามใส่บัญชีที่มีสิทธิ์แอดมินเด็ดขาด — มี guard เช็ค role ซ้ำอีกชั้นในตัว handler
+const DEMO_RESET_ALLOWLIST = new Set(
+  (process.env.DEMO_RESET_EMAILS || "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean)
+);
 
 function issueToken(user) {
   return jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -164,9 +168,32 @@ router.post("/forgot-password", async (req, res) => {
     return res.status(400).json({ error: "กรุณากรอกอีเมล" });
   }
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const normalizedEmail = String(email).trim().toLowerCase();
+
+  // ตอบเหมือนกันเสมอไม่ว่าอีเมลจะมีอยู่จริงหรือไม่ ไม่งั้นใช้ไล่เดาได้ว่าอีเมลไหนเป็นลูกค้าจริง
+  const genericResponse = {
+    resetToken: null,
+    blocked: true,
+    message:
+      "ถ้าอีเมลนี้มีบัญชีอยู่ในระบบ เราได้ส่งลิงก์สำหรับรีเซ็ตรหัสผ่านไปให้แล้ว กรุณาตรวจสอบกล่องจดหมายของคุณ",
+  };
+
+  const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (!user) {
-    return res.status(404).json({ error: "ไม่พบบัญชีที่ใช้อีเมลนี้" });
+    return res.json(genericResponse);
+  }
+
+  // บัญชีแอดมินห้ามเปิดเผย token ตรงๆ ทุกกรณี แม้จะเปิดโหมดจำลองไว้ก็ตาม
+  // นี่คือ guard เชิงโครงสร้าง กันพลาดซ้ำจากการเผลอใส่อีเมลแอดมินลงใน DEMO_RESET_EMAILS
+  const canReveal =
+    DEMO_REVEAL_RESET_TOKEN &&
+    user.role !== "admin" &&
+    DEMO_RESET_ALLOWLIST.has(normalizedEmail);
+
+  // สร้าง token หลังผ่านการตรวจสิทธิ์แล้วเท่านั้น
+  // (เดิมสร้างก่อนเช็ค ทำให้ใครก็ยิงซ้ำเพื่อล้างลิงก์รีเซ็ตที่ค้างอยู่ของบัญชีอื่นได้)
+  if (!canReveal) {
+    return res.json(genericResponse);
   }
 
   const resetToken = crypto.randomBytes(24).toString("hex");
@@ -176,18 +203,6 @@ router.post("/forgot-password", async (req, res) => {
     where: { id: user.id },
     data: { resetToken, resetTokenExpiry },
   });
-
-  // โหมดจำลอง: แสดง token ตรงๆ ให้เฉพาะบัญชีทดลองที่กำหนดไว้ล่วงหน้าเท่านั้น (DEMO_RESET_ALLOWLIST)
-  // เว็บนี้อยู่บนโดเมนสาธารณะจริงแล้ว ถ้าเปิดให้ทุกอีเมลเห็น token ใครก็เดาอีเมลลูกค้าจริง
-  // แล้วขอ reset token ไปยึดบัญชีคนอื่นได้โดยไม่ต้องมีสิทธิ์เข้าถึงอีเมลจริงเลย
-  if (!DEMO_RESET_ALLOWLIST.has(email)) {
-    return res.json({
-      resetToken: null,
-      blocked: true,
-      error:
-        "สร้างลิงก์รีเซ็ตรหัสผ่านแล้ว แต่เพื่อความปลอดภัย เว็บ demo นี้แสดงลิงก์ตรงๆ ให้เฉพาะบัญชีทดลองที่กำหนดไว้เท่านั้น (เช่น admin@hongcha.demo, demo@hongcha.demo) กรุณาติดต่อผู้ดูแลระบบสำหรับบัญชีอื่น",
-    });
-  }
 
   res.json({ resetToken });
 });

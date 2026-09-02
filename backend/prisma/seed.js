@@ -89,47 +89,58 @@ const products = [
 ];
 
 async function main() {
-  // ลบข้อมูลออเดอร์/รีวิวเดิมก่อน เพราะแคตตาล็อกสินค้าเปลี่ยนโครงสร้างทั้งหมด
-  // (จาก 10 สินค้าสมมติแยกรสชาติ เป็น 5 สินค้าจริงแยกตามบรรจุภัณฑ์)
-  // ออเดอร์/รีวิวเดิมจะอ้างอิงสินค้าที่ไม่มีอยู่แล้ว เก็บไว้ไม่มีประโยชน์
-  await prisma.orderItem.deleteMany({});
-  await prisma.order.deleteMany({});
-  await prisma.review.deleteMany({});
-  await prisma.product.deleteMany({});
+  // seed ตัวนี้รันทุกครั้งที่ container บูต จึงต้องไม่ทำลายข้อมูล
+  // เดิมเคย deleteMany ออเดอร์/รีวิว/สินค้าทิ้งก่อน ทำให้ทุก deploy หรือทุกครั้งที่ service ตื่น
+  // ข้อมูลการสั่งซื้อจริงของลูกค้าหายถาวร — ห้ามใส่กลับมาเด็ดขาด
+  // ถ้าต้องเปลี่ยนโครงสร้างแคตตาล็อกอีก ให้ทำเป็น prisma migration ครั้งเดียว ไม่ใช่ตรงนี้
+  const existingProducts = await prisma.product.count();
+  if (existingProducts === 0) {
+    for (const product of products) {
+      await prisma.product.create({ data: product });
+    }
 
-  for (const product of products) {
-    await prisma.product.create({ data: product });
+    // upsert/create ด้วย id ตายตัวไม่ได้ขยับ sequence ของ autoincrement ให้
+    // ต้อง sync เองไม่งั้นสินค้าใหม่ที่สร้างทีหลัง (เช่นจากแผงแอดมิน) จะชน id เดิม
+    await prisma.$executeRawUnsafe(
+      `SELECT setval(pg_get_serial_sequence('"Product"', 'id'), COALESCE((SELECT MAX(id) FROM "Product"), 1))`
+    );
+    console.log(`Seeded ${products.length} products (real HugMe catalog).`);
+  } else {
+    console.log(`Skipped product seed — ${existingProducts} products already exist.`);
   }
 
-  await prisma.$executeRawUnsafe(
-    `SELECT setval(pg_get_serial_sequence('"Product"', 'id'), COALESCE((SELECT MAX(id) FROM "Product"), 1))`
-  );
-  console.log(`Seeded ${products.length} products (real HugMe catalog).`);
+  // บัญชีแอดมินสร้างจาก env เท่านั้น ห้าม hardcode รหัสผ่านลงไฟล์ที่อยู่ใน git
+  // และไม่แตะบัญชีที่มีอยู่แล้ว (ไม่รีเซ็ตรหัสผ่านทับของเดิมตอน deploy)
+  // ถ้าต้องเปลี่ยนรหัสผ่านแอดมิน ใช้ scripts/reset-admin-password.js แทน
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD;
 
-  const adminPassword = await bcrypt.hash("REMOVED-ADMIN-PASSWORD", 10);
-  await prisma.user.upsert({
-    where: { email: "admin@hongcha.demo" },
-    update: { role: "admin" },
-    create: {
-      name: "ผู้ดูแลระบบ (Admin)",
-      email: "admin@hongcha.demo",
-      password: adminPassword,
-      role: "admin",
-    },
-  });
-  console.log("Seeded admin account: admin@hongcha.demo / REMOVED-ADMIN-PASSWORD");
-
-  const demoPassword = await bcrypt.hash("REMOVED-DEMO-PASSWORD", 10);
-  await prisma.user.upsert({
-    where: { email: "demo@hongcha.demo" },
-    update: {},
-    create: {
-      name: "ผู้ใช้ทดลอง (Demo)",
-      email: "demo@hongcha.demo",
-      password: demoPassword,
-    },
-  });
-  console.log("Seeded demo customer account: demo@hongcha.demo / REMOVED-DEMO-PASSWORD");
+  if (adminEmail && adminPassword) {
+    if (adminPassword.length < 12) {
+      throw new Error("ADMIN_PASSWORD ต้องมีอย่างน้อย 12 ตัวอักษร");
+    }
+    const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+    if (existingAdmin) {
+      if (existingAdmin.role !== "admin") {
+        await prisma.user.update({ where: { id: existingAdmin.id }, data: { role: "admin" } });
+        console.log(`Promoted existing user to admin: ${adminEmail}`);
+      } else {
+        console.log(`Admin account already exists: ${adminEmail}`);
+      }
+    } else {
+      await prisma.user.create({
+        data: {
+          name: "ผู้ดูแลระบบ (Admin)",
+          email: adminEmail,
+          password: await bcrypt.hash(adminPassword, 10),
+          role: "admin",
+        },
+      });
+      console.log(`Created admin account: ${adminEmail}`);
+    }
+  } else {
+    console.log("Skipped admin seed — ADMIN_EMAIL / ADMIN_PASSWORD not set.");
+  }
 }
 
 main()
