@@ -4,59 +4,7 @@ import { BiPlus, BiMinus, BiTrash } from "react-icons/bi";
 import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 import ProductImage from "../components/ProductImage";
-
-const translations = {
-  th: {
-    emptyTitle: "ตะกร้าสินค้าของคุณว่างเปล่า",
-    emptyDesc: "ยังไม่มีสินค้าในตะกร้า ลองเลือกชาที่ถูกใจดูสิ",
-    emptyCta: "เลือกซื้อชา / Shop Now",
-    pageTitle: "ตะกร้าสินค้าของคุณ (Your Shopping Cart)",
-    pageSubtitle: "รายการสินค้าที่คุณเลือกซื้อ คัดสรรอย่างดีเพื่อส่งตรงถึงบ้านคุณ",
-    colProduct: "สินค้า / Product",
-    colPrice: "ราคาต่อชิ้น / Price",
-    colQty: "จำนวน / Qty",
-    colTotal: "ราคารวม / Total",
-    sizeLabel: "รสชาติ",
-    priceMobileLabel: "ราคา:",
-    totalMobileLabel: "ราคารวม:",
-    removeTitle: "ลบสินค้า",
-    couponPlaceholder: "กรอกโค้ดส่วนลด (ลอง TEALEAF50)",
-    applyButton: "ใช้โค้ด / Apply",
-    couponSaved: (amount, code) => `ประหยัดแล้ว ฿${amount}! (${code})`,
-    orderSummaryTitle: "สรุปคำสั่งซื้อ (Order Summary)",
-    subtotalLabel: "ราคาสินค้ารวม (Subtotal)",
-    discountLabel: "ส่วนลด (Discount)",
-    shippingLabel: "ค่าจัดส่ง (Shipping)",
-    summaryTotalLabel: "ยอดรวมสุทธิ (Total)",
-    checkoutButton: "ดำเนินการชำระเงิน / Proceed to Checkout",
-    secureNote: "การชำระเงินของคุณปลอดภัย 100%",
-  },
-  en: {
-    emptyTitle: "Your cart is empty",
-    emptyDesc: "There are no items in your cart yet. Browse our teas to find something you love.",
-    emptyCta: "Shop Now",
-    pageTitle: "Your Shopping Cart",
-    pageSubtitle: "Items you've selected, carefully curated and delivered straight to your door.",
-    colProduct: "Product",
-    colPrice: "Price",
-    colQty: "Qty",
-    colTotal: "Total",
-    sizeLabel: "Flavor",
-    priceMobileLabel: "Price:",
-    totalMobileLabel: "Total:",
-    removeTitle: "Remove item",
-    couponPlaceholder: "Discount code (TEALEAF50)",
-    applyButton: "Apply",
-    couponSaved: (amount, code) => `You saved ฿${amount}! (${code})`,
-    orderSummaryTitle: "Order Summary",
-    subtotalLabel: "Subtotal",
-    discountLabel: "Discount",
-    shippingLabel: "Shipping",
-    summaryTotalLabel: "Total",
-    checkoutButton: "Proceed to Checkout",
-    secureNote: "Your payment is 100% secure",
-  },
-};
+import translations from "../i18n/cart";
 
 export default function Cart() {
   const navigate = useNavigate();

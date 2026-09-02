@@ -4,49 +4,7 @@ import { FiCheck } from "react-icons/fi";
 import { api } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
-
-const translations = {
-  th: {
-    loading: "กำลังโหลดคำสั่งซื้อ...",
-    notFoundTitle: "ไม่พบข้อมูลคำสั่งซื้อ",
-    notFoundDesc: "ลิงก์นี้ไม่ถูกต้องหรือหมดอายุแล้ว",
-    backToHome: "กลับสู่หน้าแรก / Back to Home",
-    orderConfirmedTitle: "สั่งซื้อสำเร็จ! (Order Confirmed!)",
-    thankYou: "ขอบคุณสำหรับการสั่งซื้อชาโฮงชาฮักมี ทางร้านได้เริ่มดำเนินการเตรียมจัดส่งสินค้าของท่านแล้ว",
-    orderIdLabel: "หมายเลขคำสั่งซื้อของคุณ (Order ID)",
-    estimatedDelivery: "คาดว่าจะจัดส่งภายใน",
-    shippingExpress: "1-2 วันทำการ (Express delivery)",
-    shippingPickup: "รับที่ร้านได้ทันที (Self pick-up)",
-    shippingStandard: "3-5 วันทำการ (Standard delivery)",
-    orderSummary: "สรุปรายการสั่งซื้อ / Order Summary",
-    qtyPrefix: "x",
-    subtotal: "ราคาสินค้ารวม",
-    discount: "ส่วนลด",
-    shippingCost: "ค่าจัดส่ง",
-    totalPaid: "ราคาสุทธิ (Total Paid)",
-    writeReview: "เขียนรีวิวสินค้า / Write a Review",
-  },
-  en: {
-    loading: "Loading order...",
-    notFoundTitle: "Order Not Found",
-    notFoundDesc: "This link is invalid or has expired",
-    backToHome: "Back to Home",
-    orderConfirmedTitle: "Order Confirmed!",
-    thankYou: "Thank you for your order from HongCha Hugme. We've started preparing your shipment.",
-    orderIdLabel: "Order ID",
-    estimatedDelivery: "Estimated delivery within",
-    shippingExpress: "1-2 business days (Express delivery)",
-    shippingPickup: "Ready for pick-up now (Self pick-up)",
-    shippingStandard: "3-5 business days (Standard delivery)",
-    orderSummary: "Order Summary",
-    qtyPrefix: "x",
-    subtotal: "Subtotal",
-    discount: "Discount",
-    shippingCost: "Shipping",
-    totalPaid: "Total Paid",
-    writeReview: "Write a Review",
-  },
-};
+import translations from "../i18n/orderSuccess";
 
 export default function OrderSuccess() {
   const [searchParams] = useSearchParams();

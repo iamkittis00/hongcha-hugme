@@ -3,27 +3,7 @@ import { Link } from "react-router-dom";
 import { FiUser, FiChevronRight } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
-
-const translations = {
-  th: {
-    account: "บัญชีของฉัน",
-    payment: "การชำระเงิน",
-    admin: "แผงควบคุมแอดมิน",
-    language: "ภาษา",
-    logout: "ออกจากระบบ",
-    thai: "ไทย",
-    english: "อังกฤษ",
-  },
-  en: {
-    account: "My Account",
-    payment: "Payment",
-    admin: "Admin Panel",
-    language: "Language",
-    logout: "Log Out",
-    thai: "Thai",
-    english: "English",
-  },
-};
+import translations from "../i18n/accountDropdown";
 
 export default function AccountDropdown() {
   const { user, logout, isAdmin } = useAuth();

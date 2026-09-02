@@ -7,57 +7,9 @@ import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
 import ProductImage from "../components/ProductImage";
 import CustomSelect from "../components/CustomSelect";
+import translations from "../i18n/products";
 
 const PAGE_SIZE = 6;
-
-const translations = {
-  th: {
-    breadcrumbHome: "หน้าแรก (Home)",
-    breadcrumbCurrent: "สินค้าทั้งหมด",
-    heading: "สินค้าทั้งหมด",
-    searchPlaceholder: "ค้นหาชา เช่น มัทฉะ, อู่หลง...",
-    searchResultsFor: "ผลการค้นหาสำหรับ",
-    searchResultsFound: (count) => `พบ ${count} รายการ`,
-    sortLabel: "เรียงตาม:",
-    sortLowHigh: "ราคาต่ำ - สูง (Price: Low - High)",
-    sortHighLow: "ราคาสูง - ต่ำ (Price: High - Low)",
-    filtersTitle: "ตัวกรองสินค้า",
-    clearAll: "ล้างทั้งหมด",
-    categoriesTitle: "หมวดหมู่ชา",
-    priceRangeTitle: "ช่วงราคา",
-    caffeineTitle: "ระดับคาเฟอีน",
-    loading: "กำลังโหลดสินค้า...",
-    addedToCart: "เพิ่มแล้ว!",
-    addToCart: "เพิ่มลงตะกร้า",
-    noProductsFound: "ไม่พบสินค้าที่ตรงกับตัวกรองที่เลือก",
-    previousPage: "หน้าก่อนหน้า",
-    nextPage: "หน้าถัดไป",
-    pageNumber: (n) => `หน้า ${n}`,
-  },
-  en: {
-    breadcrumbHome: "Home",
-    breadcrumbCurrent: "All Products",
-    heading: "All Products",
-    searchPlaceholder: "Search tea, e.g. matcha, oolong...",
-    searchResultsFor: "Search results for",
-    searchResultsFound: (count) => `${count} items found`,
-    sortLabel: "Sort:",
-    sortLowHigh: "Price: Low - High",
-    sortHighLow: "Price: High - Low",
-    filtersTitle: "Filters",
-    clearAll: "Clear All",
-    categoriesTitle: "Categories",
-    priceRangeTitle: "Price Range",
-    caffeineTitle: "Caffeine",
-    loading: "Loading products...",
-    addedToCart: "Added!",
-    addToCart: "Add to Cart",
-    noProductsFound: "No products match the selected filters",
-    previousPage: "Previous page",
-    nextPage: "Next page",
-    pageNumber: (n) => `Page ${n}`,
-  },
-};
 
 export default function Products() {
   const { lang } = useLanguage();

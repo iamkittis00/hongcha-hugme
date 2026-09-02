@@ -1,11 +1,7 @@
 import { BiLeaf } from "react-icons/bi";
 import { FiX } from "react-icons/fi";
 import { useLanguage } from "../context/LanguageContext";
-
-const translations = {
-  th: { tagline: "CHARIN TEA SHOP" },
-  en: { tagline: "CHARIN TEA SHOP" },
-};
+import translations from "../i18n/authCard";
 
 export default function AuthCard({ isOpen = true, isModal = false, onClose, title, subtitle, children }) {
   const { lang } = useLanguage();

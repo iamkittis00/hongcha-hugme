@@ -1,41 +1,7 @@
 import { BiLeaf } from "react-icons/bi";
 import { FaFacebookF, FaInstagram, FaTwitter, FaLine } from "react-icons/fa";
 import { useLanguage } from "../context/LanguageContext";
-
-const translations = {
-  th: {
-    brandName: "โฮงชาฮักมี",
-    tagline: "PREMIUM THAI TEA",
-    description: "แหล่งรวมใบชาไทยคุณภาพส่งตรงจากยอดดอย คัดสรรด้วยความใส่ใจพิถีพิถันเพื่อคนรักตัวจริง",
-    contactHeading: "ติดต่อเรา",
-    address: "456 ถ.มิตรภาพ ต.ในเมือง อ.เมือง จ.เชียงใหม่ 50000",
-    phone: "โทร: 02-123-4567",
-    email: "อีเมล: support@tealeaf.com",
-    policiesHeading: "นโยบายร้านค้า",
-    shippingPolicy: "นโยบายการจัดส่ง",
-    refundPolicy: "การคืนสินค้า",
-    faqs: "คำถามที่พบบ่อย",
-    socialHeading: "ติดตามเรา",
-    copyright: "© 2026 โฮงชาฮักมี สงวนลิขสิทธิ์",
-    wireframeNote: "Low-to-Mid Fidelity Wireframe Mockup",
-  },
-  en: {
-    brandName: "โฮงชาฮักมี",
-    tagline: "PREMIUM THAI TEA",
-    description: "A curated collection of quality Thai tea leaves, sourced directly from the mountain peaks and handpicked with care for true tea lovers.",
-    contactHeading: "CONTACT US",
-    address: "456 Mittraphap Rd, Nai Mueang, Mueang, Chiang Mai 50000",
-    phone: "Tel: 02-123-4567",
-    email: "Email: support@tealeaf.com",
-    policiesHeading: "POLICIES",
-    shippingPolicy: "Shipping Policy",
-    refundPolicy: "Refund Policy",
-    faqs: "FAQs",
-    socialHeading: "SOCIAL MEDIA",
-    copyright: "© 2026 โฮงชาฮักมี. All rights reserved.",
-    wireframeNote: "Low-to-Mid Fidelity Wireframe Mockup",
-  },
-};
+import translations from "../i18n/footer";
 
 export default function Footer() {
   const { lang } = useLanguage();

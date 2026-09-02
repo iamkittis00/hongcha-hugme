@@ -4,65 +4,7 @@ import { BiChevronRight, BiPlus, BiTrash, BiCheck, BiCreditCard } from "react-ic
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { api } from "../lib/api";
-
-const translations = {
-  th: {
-    breadcrumbHome: "หน้าแรก (Home)",
-    breadcrumbPayment: "การชำระเงิน",
-    title: "การชำระเงิน / Payment",
-    subtitle: "ดูประวัติคำสั่งซื้อและจัดการวิธีชำระเงินที่บันทึกไว้",
-    loginRequiredTitle: "กรุณาเข้าสู่ระบบ",
-    loginRequiredDesc: "ต้องเข้าสู่ระบบก่อนเข้าถึงหน้านี้",
-    loginButton: "เข้าสู่ระบบ",
-    ordersTab: "ประวัติคำสั่งซื้อ",
-    methodsTab: "วิธีชำระเงินที่บันทึกไว้",
-    noOrders: "ยังไม่มีคำสั่งซื้อ",
-    viewOrder: "ดูรายละเอียด",
-    orderItemsCount: "รายการ",
-    addMethod: "เพิ่มวิธีชำระเงิน",
-    noMethods: "ยังไม่มีวิธีชำระเงินที่บันทึกไว้",
-    typeCard: "บัตรเครดิต/เดบิต",
-    typePromptpay: "พร้อมเพย์",
-    typeBank: "โอนผ่านบัญชีธนาคาร",
-    cardNumberLabel: "หมายเลขบัตร",
-    expiryLabel: "วันหมดอายุ (MM/YY)",
-    setAsDefaultCheckbox: "ตั้งเป็นวิธีชำระเงินเริ่มต้น",
-    save: "บันทึก",
-    cancel: "ยกเลิก",
-    defaultBadge: "ค่าเริ่มต้น",
-    setDefault: "ตั้งเป็นค่าเริ่มต้น",
-    delete: "ลบ",
-    securityNote: "เก็บเฉพาะเลข 4 ตัวท้ายเพื่อความปลอดภัย ไม่มีการเก็บเลขบัตรเต็ม",
-  },
-  en: {
-    breadcrumbHome: "Home",
-    breadcrumbPayment: "Payment",
-    title: "Payment",
-    subtitle: "View your order history and manage saved payment methods",
-    loginRequiredTitle: "Please log in",
-    loginRequiredDesc: "You need to log in to access this page",
-    loginButton: "Log In",
-    ordersTab: "Order History",
-    methodsTab: "Saved Payment Methods",
-    noOrders: "No orders yet",
-    viewOrder: "View Details",
-    orderItemsCount: "item(s)",
-    addMethod: "Add Payment Method",
-    noMethods: "No saved payment methods yet",
-    typeCard: "Credit / Debit Card",
-    typePromptpay: "PromptPay",
-    typeBank: "Bank Transfer",
-    cardNumberLabel: "Card Number",
-    expiryLabel: "Expiry (MM/YY)",
-    setAsDefaultCheckbox: "Set as default payment method",
-    save: "Save",
-    cancel: "Cancel",
-    defaultBadge: "Default",
-    setDefault: "Set as default",
-    delete: "Delete",
-    securityNote: "Only the last 4 digits are stored for security — full card numbers are never saved.",
-  },
-};
+import translations from "../i18n/payment";
 
 export default function Payment() {
   const { token, isAuthenticated, openAuthModal } = useAuth();

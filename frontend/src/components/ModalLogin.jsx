@@ -6,45 +6,7 @@ import { FaFacebook } from "react-icons/fa";
 import AuthCard from "./AuthCard";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
-
-const translations = {
-  th: {
-    title: "เข้าสู่ระบบ",
-    subtitle: "ยินดีต้อนรับกลับสู่ช่วงเวลาแห่งความผ่อนคลาย",
-    email: "อีเมล",
-    emailPlaceholder: "example@email.com",
-    password: "รหัสผ่าน",
-    passwordPlaceholder: "ระบุรหัสผ่านของคุณ",
-    rememberMe: "จดจำฉันไว้",
-    forgotPassword: "ลืมรหัสผ่าน?",
-    loggingIn: "กำลังเข้าสู่ระบบ...",
-    login: "เข้าสู่ระบบ",
-    or: "หรือ",
-    google: "Google",
-    facebook: "Facebook",
-    demoDisclaimer: "* โหมดทดลองสำหรับ demo — ยังไม่ได้เชื่อมต่อ Google/Facebook จริง",
-    noAccount: "ยังไม่มีบัญชี? ",
-    signUp: "สมัครสมาชิก",
-  },
-  en: {
-    title: "Log In",
-    subtitle: "Welcome back to your moment of relaxation",
-    email: "Email",
-    emailPlaceholder: "example@email.com",
-    password: "Password",
-    passwordPlaceholder: "Enter your password",
-    rememberMe: "Remember me",
-    forgotPassword: "Forgot password?",
-    loggingIn: "Logging in...",
-    login: "Log In",
-    or: "or",
-    google: "Google",
-    facebook: "Facebook",
-    demoDisclaimer: "* Demo mode — not connected to real Google/Facebook.",
-    noAccount: "Don't have an account? ",
-    signUp: "Sign Up",
-  },
-};
+import translations from "../i18n/modalLogin";
 
 export default function ModalLogin({ isOpen = true, isModal = false, onClose, onSwitchToRegister, onSwitchToForgot, onSuccess }) {
   const { login, loginWithProvider } = useAuth();

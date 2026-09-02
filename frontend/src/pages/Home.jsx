@@ -7,43 +7,9 @@ import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
 import ProductImage from "../components/ProductImage";
 import heroBanner from "../assets/hero-banner.webp";
+import translations from "../i18n/home";
 
 const AUTO_SCROLL_MS = 3200;
-
-const translations = {
-  th: {
-    badge: "พรีเมียม คัดสรรด้วยมือ",
-    heroTitle: "ชาคุณภาพจากยอดดอย",
-    heroDesc: "คัดเฉพาะยอดใบชาที่ดีที่สุด ชงสดใหม่เพื่อสัมผัสอายธรรมชาติอันละมุน อบอุ่นในทุกแก้ว",
-    shopNow: "เลือกซื้อชา",
-    heroImagePlaceholder: "[ พื้นที่แบนเนอร์โปรโมทชาคุณภาพ ]",
-    categoriesTitle: "หมวดหมู่ชา",
-    categoriesSubtitle: "เลือกชาชนิดที่ใช่สำหรับช่วงเวลาที่ดีที่สุดของคุณ",
-    featuredTitle: "สินค้าแนะนำ",
-    featuredSubtitle: "ชาขายดีที่ลูกค้าประทับใจเป็นอันดับต้นๆ ของเรา",
-    viewAll: "ดูทั้งหมด",
-    addedToCart: "เพิ่มแล้ว!",
-    addToCart: "หยิบใส่ตะกร้า",
-    prevAriaLabel: "เลื่อนไปก่อนหน้า",
-    nextAriaLabel: "เลื่อนไปถัดไป",
-  },
-  en: {
-    badge: "PREMIUM & HAND-PICKED",
-    heroTitle: "Premium Tea from the Mountain Peaks",
-    heroDesc: "Best-selected whole leaves from high-altitude tea plantations.",
-    shopNow: "Shop Now",
-    heroImagePlaceholder: "[ Hero Promotional Image ]",
-    categoriesTitle: "Categories",
-    categoriesSubtitle: "Choose the right tea for your best moments.",
-    featuredTitle: "Featured Products",
-    featuredSubtitle: "Our best-selling teas loved by customers.",
-    viewAll: "View All",
-    addedToCart: "Added!",
-    addToCart: "Add to Cart",
-    prevAriaLabel: "Previous",
-    nextAriaLabel: "Next",
-  },
-};
 
 export default function Home() {
   const { lang } = useLanguage();
