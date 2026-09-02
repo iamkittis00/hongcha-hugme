@@ -7,6 +7,7 @@ import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
 import ProductImage from "../components/ProductImage";
 import CustomSelect from "../components/CustomSelect";
+import { SkeletonBox, SkeletonProductGrid } from "../components/Skeleton";
 import translations from "../i18n/products";
 
 const PAGE_SIZE = 6;
@@ -198,6 +199,13 @@ export default function Products() {
           <div>
             <h3 className="font-bold text-xs sm:text-sm text-content-primary mb-3">{t.categoriesTitle}</h3>
             <div className="flex flex-col gap-2.5">
+              {loading &&
+                Array.from({ length: 5 }, (_, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <SkeletonBox className="w-3.5 h-3.5 rounded" />
+                    <SkeletonBox className="h-3 w-24" />
+                  </div>
+                ))}
               {categories.map((cat) => (
                 <label key={cat} className="flex items-center gap-2 text-xs cursor-pointer select-none">
                   <input
@@ -282,7 +290,10 @@ export default function Products() {
 
         <main className="lg:col-span-3 flex flex-col gap-8">
           {loading && (
-            <div className="text-center text-content-muted text-sm py-12">{t.loading}</div>
+            <SkeletonProductGrid
+              count={PAGE_SIZE}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+            />
           )}
 
           {error && !loading && (

@@ -6,6 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
 import ProductImage from "../components/ProductImage";
+import { SkeletonProductGrid } from "../components/Skeleton";
 import heroBanner from "../assets/hero-banner.webp";
 import translations from "../i18n/home";
 
@@ -16,6 +17,7 @@ export default function Home() {
   const t = translations[lang];
   const { addItem } = useCart();
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [addedId, setAddedId] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
   const scrollRef = useRef(null);
@@ -31,7 +33,8 @@ export default function Home() {
     api
       .get("/products")
       .then((data) => setProducts(data.products))
-      .catch(() => setProducts([]));
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const scrollByOneCard = useCallback((direction = 1) => {
@@ -125,7 +128,16 @@ export default function Home() {
           </Link>
         </div>
 
-        {products.length > 0 && (
+        {loading && (
+          <div className="sm:px-11">
+            <SkeletonProductGrid
+              count={4}
+              className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"
+            />
+          </div>
+        )}
+
+        {!loading && products.length > 0 && (
           <div
             className="relative group sm:px-11"
             onMouseEnter={() => setIsPaused(true)}

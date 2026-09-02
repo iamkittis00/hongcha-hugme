@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import StarRating from "../components/StarRating";
 import ProductImage from "../components/ProductImage";
+import { SkeletonProductDetail } from "../components/Skeleton";
 import translations from "../i18n/productDetail";
 
 export default function ProductDetail() {
@@ -100,7 +101,11 @@ export default function ProductDetail() {
   };
 
   if (loading) {
-    return <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 text-center text-content-muted text-sm">{t.loadingProduct}</div>;
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full">
+        <SkeletonProductDetail />
+      </div>
+    );
   }
 
   if (error || !product) {
